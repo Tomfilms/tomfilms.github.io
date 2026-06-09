@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkyKing Hub</title>
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --card: #1a1a1a;
+    --border: #2a2a2a;
+    --accent: #f5a623;
+    --accent2: #4a9eff;
+    --green: #2ecc71;
+    --red: #e74c3c;
+    --text: #e8e8e8;
+    --muted: #888;
+    --font: 'Courier New', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
+
+  header {
+    background: #111;
+    border-bottom: 2px solid var(--accent);
+    padding: 14px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  header h1 { font-size: 1.1rem; color: var(--accent); letter-spacing: 2px; }
+  header span { font-size: 0.7rem; color: var(--muted); }
+
+  nav {
+    display: flex; gap: 6px; padding: 10px 12px;
+    overflow-x: auto; background: #111;
+    border-bottom: 1px solid var(--border);
+  }
+  nav button {
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--muted); padding: 6px 12px; border-radius: 4px;
+    font-family: var(--font); font-size: 0.75rem; cursor: pointer;
+    white-space: nowrap; transition: all 0.15s;
+  }
+  nav button.active, nav button:hover {
+    background: var(--accent); color: #000; border-color: var(--accent);
+  }
+
+  .section { display: none; padding: 12px; }
+  .section.active { display: block; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 6px; padding: 14px; margin-bottom: 10px;
+  }
+  .card h3 { color: var(--accent); font-size: 0.85rem; margin-bottom: 10px; letter-spacing: 1px; }
+  .card p, .card li { font-size: 0.8rem; color: var(--text); line-height: 1.6; }
+  .card ul { padding-left: 16px; }
+
+  /* COLOR CODE TABLE */
+  .color-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 0; border-bottom: 1px solid var(--border);
+    font-size: 0.8rem;
+  }
+  .color-swatch {
+    width: 28px; height: 28px; border-radius: 4px; flex-shrink: 0;
+    border: 1px solid #444;
+  }
+  .color-name { flex: 1; }
+  .color-length { color: var(--accent); font-weight: bold; min-width: 50px; text-align: right; }
+
+  /* COMMAND BLOCKS */
+  .cmd-block {
+    background: #0a0a0a; border: 1px solid #333; border-radius: 4px;
+    padding: 10px 12px; margin: 8px 0; position: relative;
+  }
+  .cmd-block code { font-size: 0.78rem; color: #7fdbff; display: block; word-break: break-all; }
+  .cmd-label { font-size: 0.68rem; color: var(--muted); margin-bottom: 4px; }
+  .copy-btn {
+    position: absolute; top: 8px; right: 8px;
+    background: #222; border: 1px solid #444; color: var(--muted);
+    font-size: 0.65rem; padding: 3px 7px; border-radius: 3px;
+    cursor: pointer; font-family: var(--font);
+  }
+  .copy-btn:active { background: var(--accent); color: #000; }
+
+  /* ID BADGE */
+  .id-badge {
+    display: inline-block; background: #111;
+    border: 1px solid var(--accent); color: var(--accent);
+    padding: 3px 8px; border-radius: 3px; font-size: 0.78rem;
+    margin: 3px 2px;
+  }
+
+  /* LINKS */
+  .link-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 0.8rem;
+  }
+  .link-row a {
+    color: var(--accent2); text-decoration: none; font-size: 0.78rem;
+  }
+  .link-row .link-label { color: var(--text); }
+
+  /* PRINTER PLAN TABLE */
+  .printer-section { margin-bottom: 16px; }
+  .printer-title {
+    font-size: 0.85rem; color: var(--accent); padding: 6px 0;
+    border-bottom: 1px solid var(--accent); margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+  .label-row {
+    display: flex; gap: 8px; padding: 6px 0;
+    border-bottom: 1px solid var(--border); font-size: 0.78rem;
+    align-items: flex-start;
+  }
+  .label-type { color: var(--accent2); min-width: 120px; flex-shrink: 0; }
+  .label-desc { color: var(--text); flex: 1; }
+  .label-tape { color: var(--muted); min-width: 70px; text-align: right; font-size: 0.7rem; }
+
+  /* STATUS DOTS */
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; }
+  .dot.green { background: var(--green); }
+  .dot.yellow { background: #f1c40f; }
+  .dot.red { background: var(--red); }
+
+  /* PIXEL STEPS */
+  .step {
+    display: flex; gap: 12px; padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .step-num {
+    background: var(--accent); color: #000;
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: bold; flex-shrink: 0;
+  }
+  .step-text { font-size: 0.8rem; line-height: 1.5; padding-top: 3px; }
+  .step-text strong { color: var(--accent); }
+
+  /* TOAST */
+  #toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: var(--green); color: #000; padding: 8px 18px;
+    border-radius: 20px; font-size: 0.8rem;
+    opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 999;
+  }
+  #toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚡ SKYKING HUB</h1>
+  <span id="nowtime"></span>
+</header>
+
+<nav id="nav">
+  <button class="active" onclick="show('colors')">🎨 Colors</button>
+  <button onclick="show('ids')">🏷️ IDs</button>
+  <button onclick="show('labels')">🖨️ Label Plan</button>
+  <button onclick="show('pixel')">📱 Pixel Setup</button>
+  <button onclick="show('commands')">💻 Commands</button>
+  <button onclick="show('links')">🔗 Links</button>
+  <button onclick="show('inventory')">📦 Inventory</button>
+</nav>
+
+<!-- COLORS -->
+<div class="section active" id="colors">
+  <div class="card">
+    <h3>📏 CABLE LENGTH COLOR CODE</h3>
+    <div class="color-row"><div class="color-swatch" style="background:#f5de00"></div><div class="color-name">Yellow</div><div class="color-length">6 ft</div></div>
+    <div class="color-row"><div class="color-swatch" style="background:#27ae60"></div><div class="color-name">Green</div><div class="color-length">10 ft</div></div>
+    <div class="color-row"><div class="color-swatch" style="background:#2980b9"></div><div class="color-name">Blue</div><div class="color-length">15 ft</div></div>
+    <div class="color-row"><div class="color-swatch" style="background:#c0392b"></div><div class="color-name">Red</div><div class="color-length">25 ft</div></div>
+    <div class="color-row"><div class="color-swatch" style="background:#e67e22"></div><div class="color-name">Orange</div><div class="color-length">50 ft</div></div>
+    <div class="color-row"><div class="color-swatch" style="background:#f0f0f0; border:1px solid #999;"></div><div class="color-name">White</div><div class="color-length">75 ft</div></div>
+    <div class="color-row"><div class="color-swatch" style="background:#1a1a1a; border:1px solid #666;"></div><div class="color-name">Black</div><div class="color-length">100 ft</div></div>
+    <div class="color-row"><div class="color-swatch" style="background:#8e44ad"></div><div class="color-name">Purple</div><div class="color-length">Custom</div></div>
+  </div>
+  <div class="card">
+    <h3>📝 RULE</h3>
+    <p>Color = LENGTH only. Owner and destination go on printed text labels. Colored tape goes on both ends of every cable.</p>
+  </div>
+</div>
+
+<!-- IDs -->
+<div class="section" id="ids">
+  <div class="card">
+    <h3>🏷️ SKYKING ID FORMAT: SK-[CAT]-[NUM]</h3>
+    <p style="margin-bottom:10px;">Examples:</p>
+    <div>
+      <span class="id-badge">SK-CAM-001</span>
+      <span class="id-badge">SK-CBL-001</span>
+      <span class="id-badge">SK-PWR-001</span>
+      <span class="id-badge">SK-MON-001</span>
+      <span class="id-badge">SK-AUD-001</span>
+      <span class="id-badge">SK-NET-001</span>
+      <span class="id-badge">SK-CASE-001</span>
+      <span class="id-badge">SK-MISC-001</span>
+    </div>
+  </div>
+  <div class="card">
+    <h3>📋 GOOGLE SHEET COLUMNS</h3>
+    <div class="cmd-block">
+      <div class="cmd-label">PASTE INTO ROW 1 — delete existing content first!</div>
+      <code>SkyKing ID	Category	Description	Quantity	Length	Owner	Volts	Amps	Connector Type	Battery Model	Notes</code>
+      <button class="copy-btn" onclick="copyText('SkyKing ID\tCategory\tDescription\tQuantity\tLength\tOwner\tVolts\tAmps\tConnector Type\tBattery Model\tNotes')">COPY</button>
+    </div>
+    <p style="margin-top:8px; color: var(--muted);">Owner: SkyKing or Califoto. Description: nickname first, standard name in parens. Example: Stinger (AC Extension Cord).</p>
+  </div>
+  <div class="card">
+    <h3>📂 CATEGORIES</h3>
+    <ul>
+      <li>CAM — Cameras & heads</li>
+      <li>CBL — Cables (all types)</li>
+      <li>PWR — Power supplies, batteries, UPS</li>
+      <li>MON — Monitors & displays</li>
+      <li>AUD — Audio gear</li>
+      <li>NET — Network gear (routers, encoders)</li>
+      <li>CASE — Road cases, pelicans, crates</li>
+      <li>MISC — Everything else</li>
+    </ul>
+  </div>
+</div>
+
+<!-- LABEL PLAN -->
+<div class="section" id="labels">
+  <div class="card">
+    <h3>🖨️ LABEL JOB PLAN — DO ONE PRINTER AT A TIME</h3>
+    <p style="color:var(--muted); font-size:0.75rem; margin-bottom:12px;">Batch by printer so you're not swapping tape every 5 minutes.</p>
+  </div>
+
+  <div class="card">
+    <div class="printer-title">QL-800 — BIG LABELS (die-cut, 2.4" wide)</div>
+    <div class="label-row"><div class="label-type">Pelican cases</div><div class="label-desc">Name + SkyKing ID + contents list</div><div class="label-tape">DK-1201</div></div>
+    <div class="label-row"><div class="label-type">Road cases</div><div class="label-desc">Name + ID + destination</div><div class="label-tape">DK-1201</div></div>
+    <div class="label-row"><div class="label-type">Milk crates</div><div class="label-desc">Category + owner (SkyKing/Califoto)</div><div class="label-tape">DK-1201</div></div>
+    <div class="label-row"><div class="label-type">Power strips</div><div class="label-desc">SK-PWR-### + circuit/location</div><div class="label-tape">DK-1201</div></div>
+    <div class="label-row"><div class="label-type">Monitors</div><div class="label-desc">SK-MON-### + size</div><div class="label-tape">DK-1201</div></div>
+    <div class="label-row"><div class="label-type">Gear bags</div><div class="label-desc">Name + contents</div><div class="label-tape">DK-1201</div></div>
+  </div>
+
+  <div class="card">
+    <div class="printer-title">PT-2100 — SMALL LABELS (TZe tape, 1.1" or smaller)</div>
+    <div class="label-row"><div class="label-type">Cable ends</div><div class="label-desc">FROM / TO + SK-CBL-### (both ends)</div><div class="label-tape">TZe-231</div></div>
+    <div class="label-row"><div class="label-type">Cable body flag</div><div class="label-desc">Colored tape = length, already on</div><div class="label-tape">Color tape</div></div>
+    <div class="label-row"><div class="label-type">Power bricks</div><div class="label-desc">Volts/Amps + what it feeds</div><div class="label-tape">TZe-231</div></div>
+    <div class="label-row"><div class="label-type">Battery packs</div><div class="label-desc">SK-PWR-### + capacity</div><div class="label-tape">TZe-231</div></div>
+    <div class="label-row"><div class="label-type">Small boxes/bins</div><div class="label-desc">Contents category</div><div class="label-tape">TZe-231</div></div>
+  </div>
+
+  <div class="card">
+    <h3>⚡ WORKFLOW — CABLE LABELS</h3>
+    <div class="step"><div class="step-num">1</div><div class="step-text">Pick up cable. Note length → wrap <strong>colored tape</strong> both ends. Done.</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-text">Log in Google Sheet. Talk-to-text. Leave SkyKing ID blank for now.</div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-text">When sheet row is done, print PT-2100 label: FROM/TO + type.</div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-text">Stick label on both ends. Cable done. Into the crate.</div></div>
+  </div>
+</div>
+
+<!-- PIXEL SETUP -->
+<div class="section" id="pixel">
+  <div class="card">
+    <h3>📱 PIXEL → GREENDUCK INVENTORY WORKFLOW</h3>
+    <p style="color:var(--muted); font-size:0.75rem; margin-bottom:12px;">Both devices must be on the SAME Google account. Check this first.</p>
+  </div>
+
+  <div class="card">
+    <h3>STEP 1 — VERIFY SAME GOOGLE ACCOUNT</h3>
+    <div class="step"><div class="step-num">1</div><div class="step-text">On Pixel: <strong>Settings → Google → top of page</strong> — note the email</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-text">On GreenDuck: open <strong>browser → accounts.google.com</strong> — check same email</div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-text">If different: on GreenDuck browser, sign out and sign in with same account as Pixel</div></div>
+  </div>
+
+  <div class="card">
+    <h3>STEP 2 — OPEN INVENTORY SHEET</h3>
+    <div class="step"><div class="step-num">1</div><div class="step-text">On Pixel: open <strong>Google Sheets app → SkyKing Inventory</strong></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-text">Tap the last empty row</div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-text">Tap the <strong>microphone</strong> on your keyboard → talk your item in</div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-text">Hit <strong>Enter/Return</strong> after each item — next row auto-starts</div></div>
+  </div>
+
+  <div class="card">
+    <h3>STEP 3 — SHARE PHOTOS TO GREENDUCK</h3>
+    <div class="step"><div class="step-num">1</div><div class="step-text">Take photo on Pixel</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-text">It auto-syncs to Google Photos (same account)</div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-text">On GreenDuck: open browser → <strong>photos.google.com</strong></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-text">Photo will be there. Drag into Claude chat to share it.</div></div>
+  </div>
+</div>
+
+<!-- COMMANDS -->
+<div class="section" id="commands">
+  <div class="card">
+    <h3>🐧 LINUX TERMINAL BASICS (GreenDuck)</h3>
+    <p style="color:var(--muted); font-size:0.72rem; margin-bottom:10px;">Open terminal: Ctrl+Alt+T on GreenDuck</p>
+    <p style="color:var(--muted); font-size:0.72rem; margin-bottom:10px;">Copy/paste IN terminal: Ctrl+Shift+C and Ctrl+Shift+V (not regular Ctrl+C)</p>
+
+    <div class="cmd-block">
+      <div class="cmd-label">Go to your home folder</div>
+      <code>cd ~</code>
+      <button class="copy-btn" onclick="copyText('cd ~')">COPY</button>
+    </div>
+    <div class="cmd-block">
+      <div class="cmd-label">List files in current folder</div>
+      <code>ls</code>
+      <button class="copy-btn" onclick="copyText('ls')">COPY</button>
+    </div>
+    <div class="cmd-block">
+      <div class="cmd-label">List files with details</div>
+      <code>ls -la</code>
+      <button class="copy-btn" onclick="copyText('ls -la')">COPY</button>
+    </div>
+    <div class="cmd-block">
+      <div class="cmd-label">See what USB devices are plugged in</div>
+      <code>lsusb</code>
+      <button class="copy-btn" onclick="copyText('lsusb')">COPY</button>
+    </div>
+    <div class="cmd-block">
+      <div class="cmd-label">Run the label maker app</div>
+      <code>python3 ~/scripts/labelmaker.py</code>
+      <button class="copy-btn" onclick="copyText('python3 ~/scripts/labelmaker.py')">COPY</button>
+    </div>
+    <div class="cmd-block">
+      <div class="cmd-label">Run the gear database app</div>
+      <code>python3 ~/scripts/geardatabase.py</code>
+      <button class="copy-btn" onclick="copyText('python3 ~/scripts/geardatabase.py')">COPY</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🖨️ PT-2100 LABEL COMMANDS</h3>
+    <div class="cmd-block">
+      <div class="cmd-label">Test print — 2 lines</div>
+      <code>ptouch-print --font "DejaVu Sans" --fontsize 14 --print "LINE ONE
+LINE TWO"</code>
+      <button class="copy-btn" onclick="copyText('ptouch-print --font \"DejaVu Sans\" --fontsize 14 --print \"LINE ONE\nLINE TWO\"')">COPY</button>
+    </div>
+    <div class="cmd-block">
+      <div class="cmd-label">Preview label first (creates label.png)</div>
+      <code>ptouch-print --font "DejaVu Sans" --fontsize 14 --writepng label.png "LINE ONE
+LINE TWO"</code>
+      <button class="copy-btn" onclick="copyText('ptouch-print --font \"DejaVu Sans\" --fontsize 14 --writepng label.png \"LINE ONE\nLINE TWO\"')">COPY</button>
+    </div>
+    <p style="color:var(--muted); font-size:0.72rem; margin-top:8px;">⚠️ Preview and print are separate commands — don't combine with &&</p>
+  </div>
+
+  <div class="card">
+    <h3>🖨️ QL-800 LABEL (via labelmaker.py)</h3>
+    <p style="font-size:0.78rem;">Just run the labelmaker app — it has all the templates (Shoebox, Pelican, Crate, Cable Tag, Asset Tag, etc.)</p>
+    <div class="cmd-block">
+      <div class="cmd-label">Launch labelmaker</div>
+      <code>python3 ~/scripts/labelmaker.py</code>
+      <button class="copy-btn" onclick="copyText('python3 ~/scripts/labelmaker.py')">COPY</button>
+    </div>
+  </div>
+</div>
+
+<!-- LINKS -->
+<div class="section" id="links">
+  <div class="card">
+    <h3>🔗 QUICK LINKS</h3>
+    <div class="link-row"><div class="link-label">📊 SkyKing Inventory (Google Sheets)</div><a href="https://sheets.google.com" target="_blank">sheets.google.com →</a></div>
+    <div class="link-row"><div class="link-label">📷 Google Photos (GreenDuck)</div><a href="https://photos.google.com" target="_blank">photos.google.com →</a></div>
+    <div class="link-row"><div class="link-label">📝 Google Keep (notes)</div><a href="https://keep.google.com" target="_blank">keep.google.com →</a></div>
+    <div class="link-row"><div class="link-label">🐙 GitHub (TomFilms)</div><a href="https://github.com/TomFilms" target="_blank">github.com/TomFilms →</a></div>
+    <div class="link-row"><div class="link-label">🌐 Your GitHub Pages site</div><a href="https://tomfilms.github.io" target="_blank">tomfilms.github.io →</a></div>
+    <div class="link-row"><div class="link-label">📺 AVMatrix SE2017 (local)</div><a href="http://192.168.8.50" target="_blank">192.168.8.50 →</a></div>
+    <div class="link-row"><div class="link-label">📡 GL.iNet Router (local)</div><a href="http://192.168.8.1" target="_blank">192.168.8.1 →</a></div>
+  </div>
+
+  <div class="card">
+    <h3>📋 GOOGLE KEEP — WHAT GOES WHERE</h3>
+    <p style="font-size:0.78rem; margin-bottom:8px;">Use these as note titles so you can find things by search:</p>
+    <ul style="font-size:0.78rem; line-height:2;">
+      <li><strong>"SKYKING CABLE COLORS"</strong> — the color code chart</li>
+      <li><strong>"SKYKING ID LIST"</strong> — current highest SK numbers used</li>
+      <li><strong>"SKYKING COMMANDS"</strong> — paste terminal commands here</li>
+      <li><strong>"SKYKING JOBS"</strong> — running job log</li>
+      <li><strong>"SKYKING GEAR HUB"</strong> — link to this page</li>
+      <li><strong>"CIAOUSA STREAM SETTINGS"</strong> — encoder/SRT config</li>
+    </ul>
+  </div>
+</div>
+
+<!-- INVENTORY -->
+<div class="section" id="inventory">
+  <div class="card">
+    <h3>📦 INVENTORY STATUS</h3>
+    <div style="font-size:0.8rem; line-height:2.2;">
+      <div><span class="dot green"></span>Google Sheet created: SkyKing Inventory</div>
+      <div><span class="dot green"></span>Header row: 11 columns set</div>
+      <div><span class="dot green"></span>Color code locked (8 colors)</div>
+      <div><span class="dot yellow"></span>SkyKing IDs: not yet assigned (assign after sheet is populated)</div>
+      <div><span class="dot yellow"></span>Label print tied to inventory: in progress</div>
+      <div><span class="dot red"></span>GitHub upload of cable-label tool: pending</div>
+      <div><span class="dot red"></span>Pixel → GreenDuck workflow: verify same Google account</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📝 HOW TO TELL CLAUDE WHAT'S HAPPENING</h3>
+    <p style="font-size:0.78rem; line-height:1.8;">Start a new chat like this and I'll pick up fast:</p>
+    <div class="cmd-block">
+      <div class="cmd-label">COPY THIS OPENER — fill in the blanks</div>
+      <code>SkyKing session. GreenDuck. Working on: [WHAT]. Last time we did: [WHAT]. Need: [WHAT].</code>
+      <button class="copy-btn" onclick="copyText('SkyKing session. GreenDuck. Working on: [WHAT]. Last time we did: [WHAT]. Need: [WHAT].')">COPY</button>
+    </div>
+    <p style="font-size:0.75rem; color:var(--muted); margin-top:8px;">My memory summary already knows your gear, machines, and history. The opener just tells me what you're focused on TODAY.</p>
+  </div>
+
+  <div class="card">
+    <h3>🗺️ FILES WE'VE BUILT</h3>
+    <ul style="font-size:0.78rem; line-height:2;">
+      <li><code>~/scripts/labelmaker.py</code> — QL-800 label maker app</li>
+      <li><code>~/scripts/geardatabase.py</code> — gear inventory database app</li>
+      <li><code>~/Desktop/cable_colors.html</code> — color chart (local, GreenDuck)</li>
+      <li><code>cable-label.html</code> (Downloads) — cable label tool for GitHub</li>
+      <li><code>skyking-hub.html</code> — THIS file</li>
+    </ul>
+  </div>
+</div>
+
+<div id="toast">Copied!</div>
+
+<script>
+  // Nav
+  function show(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  // Copy
+  function copyText(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      const t = document.getElementById('toast');
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 1500);
+    });
+  }
+
+  // Clock
+  function updateTime() {
+    const now = new Date();
+    document.getElementById('nowtime').textContent = now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  }
+  updateTime(); setInterval(updateTime, 10000);
+</script>
+</body>
+</html>
