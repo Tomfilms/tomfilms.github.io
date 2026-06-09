@@ -6,242 +6,129 @@
 <title>SkyKing Gear Intake</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: #111;
-    color: #eee;
-    font-family: 'Courier New', monospace;
-    min-height: 100vh;
-    padding: 16px;
-  }
-  header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 18px;
-  }
-  header .logo {
-    font-size: 22px;
-    font-weight: bold;
-    color: #f5a623;
-    letter-spacing: 2px;
-  }
-  header .sub {
-    font-size: 12px;
-    color: #666;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  #mic-btn {
-    width: 100%;
-    padding: 20px;
-    font-size: 20px;
-    font-family: 'Courier New', monospace;
-    font-weight: bold;
-    background: #222;
-    color: #f5a623;
-    border: 2px solid #f5a623;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-bottom: 14px;
-    transition: background 0.15s;
-  }
-  #mic-btn.listening {
-    background: #3a1f00;
-    color: #ff6600;
-    border-color: #ff6600;
-    animation: pulse 1s infinite;
-  }
-  @keyframes pulse {
-    0%,100% { opacity: 1; }
-    50% { opacity: 0.6; }
-  }
-  #status {
-    font-size: 12px;
-    color: #555;
-    margin-bottom: 10px;
-    min-height: 18px;
-    text-align: center;
-  }
-  #interim {
-    font-size: 13px;
-    color: #888;
-    font-style: italic;
-    min-height: 20px;
-    margin-bottom: 10px;
-    padding: 6px 8px;
-    background: #1a1a1a;
-    border-radius: 4px;
-  }
-  #entries {
-    width: 100%;
-    height: 280px;
-    background: #1a1a1a;
-    color: #2ecc71;
-    font-family: 'Courier New', monospace;
-    font-size: 14px;
-    border: 1px solid #333;
-    border-radius: 6px;
-    padding: 10px;
-    resize: vertical;
-    margin-bottom: 12px;
-  }
-  .btn-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-  .btn-row button {
-    flex: 1;
-    padding: 14px 8px;
-    font-family: 'Courier New', monospace;
-    font-size: 14px;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-  }
+  body { background: #111; color: #eee; font-family: 'Courier New', monospace; min-height: 100vh; padding: 16px; }
+  .logo { font-size: 22px; font-weight: bold; color: #f5a623; letter-spacing: 2px; margin-bottom: 4px; }
+  .sub { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+  #mic-btn { width: 100%; padding: 22px; font-size: 20px; font-family: 'Courier New', monospace; font-weight: bold; background: #222; color: #f5a623; border: 2px solid #f5a623; border-radius: 6px; cursor: pointer; margin-bottom: 10px; }
+  #mic-btn.listening { background: #3a1f00; color: #ff6600; border-color: #ff6600; }
+  #status { font-size: 13px; color: #666; margin-bottom: 8px; text-align: center; min-height: 20px; }
+  #interim { font-size: 13px; color: #888; font-style: italic; min-height: 20px; margin-bottom: 10px; padding: 6px 8px; background: #1a1a1a; border-radius: 4px; }
+  #entries { width: 100%; height: 300px; background: #1a1a1a; color: #2ecc71; font-family: 'Courier New', monospace; font-size: 14px; border: 1px solid #333; border-radius: 6px; padding: 10px; resize: vertical; margin-bottom: 12px; }
+  .btn-row { display: flex; gap: 10px; margin-bottom: 12px; }
+  .btn-row button { flex: 1; padding: 14px 8px; font-family: 'Courier New', monospace; font-size: 14px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; }
   #clear-btn { background: #333; color: #aaa; }
-  #done-btn  { background: #f5a623; color: #111; }
-  #hint {
-    font-size: 11px;
-    color: #444;
-    line-height: 1.6;
-  }
-  #review {
-    display: none;
-    margin-top: 16px;
-  }
-  #review h2 {
-    font-size: 14px;
-    color: #f5a623;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  .entry-card {
-    background: #1a1a1a;
-    border: 1px solid #333;
-    border-radius: 6px;
-    padding: 10px 12px;
-    margin-bottom: 8px;
-    font-size: 13px;
-    line-height: 1.8;
-  }
+  #done-btn { background: #f5a623; color: #111; }
+  #hint { font-size: 11px; color: #444; line-height: 1.8; margin-bottom: 16px; }
+  #review { display: none; margin-top: 16px; }
+  #review h2 { font-size: 14px; color: #f5a623; margin-bottom: 10px; text-transform: uppercase; }
+  .entry-card { background: #1a1a1a; border: 1px solid #333; border-radius: 6px; padding: 10px 12px; margin-bottom: 8px; font-size: 13px; line-height: 1.8; }
   .entry-card .eid { color: #f5a623; font-weight: bold; font-size: 15px; }
   .entry-card .edesc { color: #eee; }
   .entry-card .enotes { color: #888; font-size: 12px; }
-  #copy-btn {
-    width: 100%;
-    padding: 14px;
-    background: #2ecc71;
-    color: #111;
-    font-family: 'Courier New', monospace;
-    font-size: 15px;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 10px;
-  }
+  #copy-btn { width: 100%; padding: 14px; background: #2ecc71; color: #111; font-family: 'Courier New', monospace; font-size: 15px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; }
   #copy-confirm { color: #2ecc71; font-size: 12px; text-align: center; margin-top: 6px; min-height: 18px; }
 </style>
 </head>
 <body>
-
-<header>
-  <div>
-    <div class="logo">SKYKING</div>
-    <div class="sub">Gear Intake</div>
-  </div>
-</header>
-
+<div class="logo">SKYKING</div>
+<div class="sub">Gear Intake</div>
 <button id="mic-btn" onclick="toggleMic()">🎙 TAP TO TALK</button>
 <div id="status">Ready</div>
 <div id="interim"></div>
-
-<textarea id="entries" placeholder="Your entries will appear here...&#10;One case per line, like:&#10;SK-PEL-001, Pelican 1510, Canon XA11 kit, 2 batteries charger cards&#10;SK-PEL-002, Nanuk 935, Ronin RS2 gimbal, power cables manual"></textarea>
-
+<textarea id="entries" placeholder="Entries appear here — one case per line&#10;SK-PEL-001, Pelican 1510, Canon XA11, 2 batteries"></textarea>
 <div class="btn-row">
   <button id="clear-btn" onclick="clearAll()">CLEAR</button>
   <button id="done-btn" onclick="reviewEntries()">REVIEW →</button>
 </div>
-
 <div id="hint">
-  Say each case like:<br>
-  <em>"SK-PEL-001 comma Pelican 1510 comma Canon XA11 kit comma 2 batteries"</em><br>
-  Say "new line" or pause to start the next case.
+  Say: <em>"SK-PEL-001 comma Pelican 1510 comma Canon XA11 comma 2 batteries"</em><br>
+  Say <em>"new line"</em> between cases.<br>
+  Mic auto-restarts when Android cuts it — just keep talking.
 </div>
-
 <div id="review">
   <h2>Review Before Saving</h2>
   <div id="cards"></div>
   <button id="copy-btn" onclick="copyCSV()">📋 COPY AS CSV FOR DATABASE</button>
   <div id="copy-confirm"></div>
 </div>
-
 <script>
 let recognition = null;
-let listening = false;
-let fullText = '';
+let shouldRestart = false;
+let sessionResults = []; // track finals per session to avoid dups on restart
 
 function toggleMic() {
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
     document.getElementById('status').textContent = 'Speech not supported — type manually';
     return;
   }
-  if (listening) {
-    recognition.stop();
+  if (shouldRestart) {
+    shouldRestart = false;
+    if (recognition) recognition.stop();
+    document.getElementById('mic-btn').textContent = '🎙 TAP TO TALK';
+    document.getElementById('mic-btn').classList.remove('listening');
+    document.getElementById('status').textContent = 'Stopped.';
     return;
   }
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SpeechRecognition();
+  startMic();
+}
+
+function startMic() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
   recognition.continuous = true;
   recognition.interimResults = true;
   recognition.lang = 'en-US';
+  shouldRestart = true;
+  // Reset per-session result index so we don't replay old finals
+  let resultOffset = 0;
 
   recognition.onstart = () => {
-    listening = true;
+    resultOffset = 0;
     document.getElementById('mic-btn').textContent = '🔴 LISTENING — TAP TO STOP';
     document.getElementById('mic-btn').classList.add('listening');
-    document.getElementById('status').textContent = 'Listening...';
+    document.getElementById('status').textContent = 'Listening — pause all you want...';
   };
 
   recognition.onresult = (e) => {
     let interim = '';
-    let finalChunk = '';
     for (let i = e.resultIndex; i < e.results.length; i++) {
       if (e.results[i].isFinal) {
-        finalChunk += e.results[i][0].transcript;
+        // Only process if this result index is new
+        if (i >= resultOffset) {
+          let text = e.results[i][0].transcript
+            .replace(/\bnew line\b/gi, '\n')
+            .replace(/\bnewline\b/gi, '\n')
+            .replace(/\bperiod\b/gi, '\n')
+            .trim();
+          if (text) {
+            const ta = document.getElementById('entries');
+            if (ta.value && !ta.value.endsWith('\n') && !ta.value.endsWith(' ')) ta.value += ' ';
+            ta.value += text;
+          }
+          resultOffset = i + 1;
+        }
       } else {
         interim += e.results[i][0].transcript;
       }
-    }
-    if (finalChunk) {
-      // Replace "new line" spoken word with actual newline
-      let cleaned = finalChunk
-        .replace(/\bnew line\b/gi, '\n')
-        .replace(/\bnewline\b/gi, '\n')
-        .trim();
-      // Auto newline if ends with a period
-      cleaned = cleaned.replace(/\.\s*/g, '\n');
-      const ta = document.getElementById('entries');
-      if (ta.value && !ta.value.endsWith('\n')) ta.value += ' ';
-      ta.value += cleaned;
-      fullText = ta.value;
     }
     document.getElementById('interim').textContent = interim;
   };
 
   recognition.onerror = (e) => {
+    if (e.error === 'no-speech') return;
     document.getElementById('status').textContent = 'Error: ' + e.error;
   };
 
   recognition.onend = () => {
-    listening = false;
-    document.getElementById('mic-btn').textContent = '🎙 TAP TO TALK';
-    document.getElementById('mic-btn').classList.remove('listening');
-    document.getElementById('status').textContent = 'Stopped. Tap to add more.';
     document.getElementById('interim').textContent = '';
+    if (shouldRestart) {
+      document.getElementById('status').textContent = 'Listening — pause all you want...';
+      setTimeout(() => { if (shouldRestart) startMic(); }, 250);
+    } else {
+      document.getElementById('mic-btn').textContent = '🎙 TAP TO TALK';
+      document.getElementById('mic-btn').classList.remove('listening');
+      document.getElementById('status').textContent = 'Stopped.';
+    }
   };
 
   recognition.start();
@@ -256,57 +143,33 @@ function clearAll() {
 
 function reviewEntries() {
   const lines = document.getElementById('entries').value
-    .split('\n')
-    .map(l => l.trim())
-    .filter(l => l.length > 0);
-
-  if (lines.length === 0) {
-    alert('Nothing to review yet.');
-    return;
-  }
-
+    .split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  if (!lines.length) { alert('Nothing to review yet.'); return; }
   const cards = document.getElementById('cards');
   cards.innerHTML = '';
-
-  lines.forEach((line, i) => {
-    const parts = line.split(',').map(p => p.trim());
-    const id    = parts[0] || '—';
-    const desc  = parts[1] || '—';
-    const notes = parts.slice(2).join(', ') || '';
-    const card  = document.createElement('div');
+  lines.forEach(line => {
+    const p = line.split(',').map(x => x.trim());
+    const card = document.createElement('div');
     card.className = 'entry-card';
-    card.innerHTML = `
-      <div class="eid">${id}</div>
-      <div class="edesc">${desc}</div>
-      ${notes ? `<div class="enotes">${notes}</div>` : ''}
-    `;
+    card.innerHTML = `<div class="eid">${p[0]||'—'}</div><div class="edesc">${p[1]||'—'}</div>${p.slice(2).join(', ') ? `<div class="enotes">${p.slice(2).join(', ')}</div>` : ''}`;
     cards.appendChild(card);
   });
-
   document.getElementById('review').style.display = 'block';
   document.getElementById('review').scrollIntoView({ behavior: 'smooth' });
 }
 
 function copyCSV() {
   const lines = document.getElementById('entries').value
-    .split('\n')
-    .map(l => l.trim())
-    .filter(l => l.length > 0);
-
+    .split('\n').map(l => l.trim()).filter(l => l.length > 0);
   const header = 'skyking_id,description,notes,status';
   const rows = lines.map(line => {
-    const parts = line.split(',').map(p => p.trim());
-    const id    = parts[0] || '';
-    const desc  = parts[1] || '';
-    const notes = parts.slice(2).join(' ') || '';
-    return `${id},"${desc}","${notes}",In Stock`;
+    const p = line.split(',').map(x => x.trim());
+    return `${p[0]||''},"${p[1]||''}","${p.slice(2).join(' ')||''}",In Stock`;
   });
-
   const csv = [header, ...rows].join('\n');
   navigator.clipboard.writeText(csv).then(() => {
-    document.getElementById('copy-confirm').textContent = '✓ Copied! Paste into gear database or terminal.';
+    document.getElementById('copy-confirm').textContent = '✓ Copied!';
   }).catch(() => {
-    // Fallback
     const ta = document.createElement('textarea');
     ta.value = csv;
     document.body.appendChild(ta);
