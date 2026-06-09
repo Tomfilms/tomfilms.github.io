@@ -3,181 +3,291 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>SkyKing Gear Intake</title>
+<title>SkyKing Intake</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #111; color: #eee; font-family: 'Courier New', monospace; min-height: 100vh; padding: 16px; }
-  .logo { font-size: 22px; font-weight: bold; color: #f5a623; letter-spacing: 2px; margin-bottom: 4px; }
-  .sub { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
-  #mic-btn { width: 100%; padding: 22px; font-size: 20px; font-family: 'Courier New', monospace; font-weight: bold; background: #222; color: #f5a623; border: 2px solid #f5a623; border-radius: 6px; cursor: pointer; margin-bottom: 10px; }
-  #mic-btn.listening { background: #3a1f00; color: #ff6600; border-color: #ff6600; }
-  #status { font-size: 13px; color: #666; margin-bottom: 8px; text-align: center; min-height: 20px; }
-  #interim { font-size: 13px; color: #888; font-style: italic; min-height: 20px; margin-bottom: 10px; padding: 6px 8px; background: #1a1a1a; border-radius: 4px; }
-  #entries { width: 100%; height: 300px; background: #1a1a1a; color: #2ecc71; font-family: 'Courier New', monospace; font-size: 14px; border: 1px solid #333; border-radius: 6px; padding: 10px; resize: vertical; margin-bottom: 12px; }
-  .btn-row { display: flex; gap: 10px; margin-bottom: 12px; }
-  .btn-row button { flex: 1; padding: 14px 8px; font-family: 'Courier New', monospace; font-size: 14px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; }
-  #clear-btn { background: #333; color: #aaa; }
-  #done-btn { background: #f5a623; color: #111; }
-  #hint { font-size: 11px; color: #444; line-height: 1.8; margin-bottom: 16px; }
-  #review { display: none; margin-top: 16px; }
-  #review h2 { font-size: 14px; color: #f5a623; margin-bottom: 10px; text-transform: uppercase; }
-  .entry-card { background: #1a1a1a; border: 1px solid #333; border-radius: 6px; padding: 10px 12px; margin-bottom: 8px; font-size: 13px; line-height: 1.8; }
-  .entry-card .eid { color: #f5a623; font-weight: bold; font-size: 15px; }
-  .entry-card .edesc { color: #eee; }
-  .entry-card .enotes { color: #888; font-size: 12px; }
-  #copy-btn { width: 100%; padding: 14px; background: #2ecc71; color: #111; font-family: 'Courier New', monospace; font-size: 15px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; }
-  #copy-confirm { color: #2ecc71; font-size: 12px; text-align: center; margin-top: 6px; min-height: 18px; }
+  body {
+    background: #111;
+    color: #eee;
+    font-family: 'Arial', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    gap: 16px;
+  }
+  h1 { font-size: 1.4rem; color: #f90; letter-spacing: 2px; margin-top: 10px; }
+  #status {
+    font-size: 1rem;
+    color: #aaa;
+    min-height: 1.4em;
+    text-align: center;
+  }
+  #status.listening { color: #4f4; }
+  #mic-btn {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: 6px solid #f90;
+    background: #222;
+    color: #f90;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  #mic-btn.active {
+    background: #f90;
+    color: #111;
+    border-color: #fff;
+  }
+  #mic-icon { font-size: 3rem; line-height: 1; }
+  #transcript-box {
+    width: 100%;
+    max-width: 600px;
+    background: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 1rem;
+    color: #ddd;
+    min-height: 80px;
+    font-style: italic;
+    line-height: 1.5;
+  }
+  #entries-area {
+    width: 100%;
+    max-width: 600px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 12px;
+    min-height: 120px;
+    max-height: 300px;
+    overflow-y: auto;
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: #ccc;
+  }
+  .entry-line {
+    border-bottom: 1px solid #2a2a2a;
+    padding: 4px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .entry-line span { flex: 1; }
+  .del-btn {
+    background: none;
+    border: none;
+    color: #c44;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0 4px;
+  }
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 600px;
+  }
+  .action-btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 14px 10px;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  #copy-btn { background: #2a6; color: #fff; }
+  #copy-btn a { color: #fff; text-decoration: none; }
+  #clear-btn { background: #444; color: #eee; }
+  #copy-confirm { color: #4f4; font-size: 0.95rem; min-height: 1.2em; }
+  .label { font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 1px; align-self: flex-start; width: 100%; max-width: 600px; }
 </style>
 </head>
 <body>
-<div class="logo">SKYKING</div>
-<div class="sub">Gear Intake</div>
-<button id="mic-btn" onclick="toggleMic()">🎙 TAP TO TALK</button>
-<div id="status">Ready</div>
-<div id="interim"></div>
-<textarea id="entries" placeholder="Entries appear here — one case per line&#10;SK-PEL-001, Pelican 1510, Canon XA11, 2 batteries"></textarea>
+
+<h1>⚡ SKYKING INTAKE</h1>
+<div id="status">Tap the button to start talking</div>
+
+<button id="mic-btn" ontouchstart="toggleMic()" onclick="handleClick()">
+  <span id="mic-icon">🎙️</span>
+  <span id="mic-label">TAP TO TALK</span>
+</button>
+
+<div class="label">Heard:</div>
+<div id="transcript-box">—</div>
+
+<div class="label">Entries (<span id="count">0</span>):</div>
+<div id="entries-area"><em style="color:#555">Nothing yet</em></div>
+
 <div class="btn-row">
-  <button id="clear-btn" onclick="clearAll()">CLEAR</button>
-  <button id="done-btn" onclick="reviewEntries()">REVIEW →</button>
+  <button class="action-btn" id="copy-btn" onclick="copyCSV()">⬇️ Download CSV</button>
+  <button class="action-btn" id="clear-btn" onclick="clearAll()">🗑️ Clear All</button>
 </div>
-<div id="hint">
-  Say: <em>"SK-PEL-001 comma Pelican 1510 comma Canon XA11 comma 2 batteries"</em><br>
-  Say <em>"new line"</em> between cases.<br>
-  Mic auto-restarts when Android cuts it — just keep talking.
-</div>
-<div id="review">
-  <h2>Review Before Saving</h2>
-  <div id="cards"></div>
-  <button id="copy-btn" onclick="copyCSV()">📋 COPY AS CSV FOR DATABASE</button>
-  <div id="copy-confirm"></div>
-</div>
+<div id="copy-confirm"></div>
+
 <script>
 let recognition = null;
-let shouldRestart = false;
-let sessionResults = []; // track finals per session to avoid dups on restart
+let listening = false;
+let entries = [];
+let touchHandled = false;
 
-function toggleMic() {
-  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-    document.getElementById('status').textContent = 'Speech not supported — type manually';
-    return;
+function initRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    document.getElementById('status').textContent = 'Speech not supported on this browser';
+    return null;
   }
-  if (shouldRestart) {
-    shouldRestart = false;
-    if (recognition) recognition.stop();
-    document.getElementById('mic-btn').textContent = '🎙 TAP TO TALK';
-    document.getElementById('mic-btn').classList.remove('listening');
-    document.getElementById('status').textContent = 'Stopped.';
-    return;
-  }
-  startMic();
-}
+  const r = new SpeechRecognition();
+  r.continuous = false;
+  r.interimResults = true;
+  r.lang = 'en-US';
 
-function startMic() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SR();
-  recognition.continuous = true;
-  recognition.interimResults = true;
-  recognition.lang = 'en-US';
-  shouldRestart = true;
-  // Reset per-session result index so we don't replay old finals
-  let resultOffset = 0;
-
-  recognition.onstart = () => {
-    resultOffset = 0;
-    document.getElementById('mic-btn').textContent = '🔴 LISTENING — TAP TO STOP';
-    document.getElementById('mic-btn').classList.add('listening');
-    document.getElementById('status').textContent = 'Listening — pause all you want...';
+  r.onstart = () => {
+    listening = true;
+    document.getElementById('mic-btn').classList.add('active');
+    document.getElementById('mic-label').textContent = 'TAP TO STOP';
+    document.getElementById('status').textContent = '🔴 Listening...';
+    document.getElementById('status').className = 'listening';
+    document.getElementById('transcript-box').textContent = '...';
   };
 
-  recognition.onresult = (e) => {
+  r.onresult = (e) => {
     let interim = '';
+    let final = '';
     for (let i = e.resultIndex; i < e.results.length; i++) {
       if (e.results[i].isFinal) {
-        // Only process if this result index is new
-        if (i >= resultOffset) {
-          let text = e.results[i][0].transcript
-            .replace(/\bnew line\b/gi, '\n')
-            .replace(/\bnewline\b/gi, '\n')
-            .replace(/\bperiod\b/gi, '\n')
-            .trim();
-          if (text) {
-            const ta = document.getElementById('entries');
-            if (ta.value && !ta.value.endsWith('\n') && !ta.value.endsWith(' ')) ta.value += ' ';
-            ta.value += text;
-          }
-          resultOffset = i + 1;
-        }
+        final += e.results[i][0].transcript;
       } else {
         interim += e.results[i][0].transcript;
       }
     }
-    document.getElementById('interim').textContent = interim;
-  };
-
-  recognition.onerror = (e) => {
-    if (e.error === 'no-speech') return;
-    document.getElementById('status').textContent = 'Error: ' + e.error;
-  };
-
-  recognition.onend = () => {
-    document.getElementById('interim').textContent = '';
-    if (shouldRestart) {
-      document.getElementById('status').textContent = 'Listening — pause all you want...';
-      setTimeout(() => { if (shouldRestart) startMic(); }, 250);
-    } else {
-      document.getElementById('mic-btn').textContent = '🎙 TAP TO TALK';
-      document.getElementById('mic-btn').classList.remove('listening');
-      document.getElementById('status').textContent = 'Stopped.';
+    document.getElementById('transcript-box').textContent = final || interim || '...';
+    if (final.trim()) {
+      addEntry(final.trim());
+      stopListening();
     }
   };
 
-  recognition.start();
+  r.onerror = (e) => {
+    if (e.error === 'no-speech') {
+      document.getElementById('status').textContent = 'No speech detected — tap again';
+    } else {
+      document.getElementById('status').textContent = 'Error: ' + e.error;
+    }
+    stopListening();
+  };
+
+  r.onend = () => {
+    stopListening();
+  };
+
+  return r;
 }
 
-function clearAll() {
-  if (confirm('Clear everything?')) {
-    document.getElementById('entries').value = '';
-    document.getElementById('review').style.display = 'none';
+function toggleMic() {
+  touchHandled = true;
+  if (listening) {
+    stopListening();
+  } else {
+    startListening();
   }
 }
 
-function reviewEntries() {
-  const lines = document.getElementById('entries').value
-    .split('\n').map(l => l.trim()).filter(l => l.length > 0);
-  if (!lines.length) { alert('Nothing to review yet.'); return; }
-  const cards = document.getElementById('cards');
-  cards.innerHTML = '';
-  lines.forEach(line => {
-    const p = line.split(',').map(x => x.trim());
-    const card = document.createElement('div');
-    card.className = 'entry-card';
-    card.innerHTML = `<div class="eid">${p[0]||'—'}</div><div class="edesc">${p[1]||'—'}</div>${p.slice(2).join(', ') ? `<div class="enotes">${p.slice(2).join(', ')}</div>` : ''}`;
-    cards.appendChild(card);
-  });
-  document.getElementById('review').style.display = 'block';
-  document.getElementById('review').scrollIntoView({ behavior: 'smooth' });
+function handleClick() {
+  if (touchHandled) { touchHandled = false; return; }
+  if (listening) {
+    stopListening();
+  } else {
+    startListening();
+  }
+}
+
+function startListening() {
+  recognition = initRecognition();
+  if (!recognition) return;
+  try { recognition.start(); } catch(e) {}
+}
+
+function stopListening() {
+  listening = false;
+  document.getElementById('mic-btn').classList.remove('active');
+  document.getElementById('mic-label').textContent = 'TAP TO TALK';
+  document.getElementById('status').textContent = 'Tap the button to start talking';
+  document.getElementById('status').className = '';
+  if (recognition) {
+    try { recognition.stop(); } catch(e) {}
+    recognition = null;
+  }
+}
+
+function addEntry(text) {
+  entries.push(text);
+  renderEntries();
+}
+
+function deleteEntry(i) {
+  entries.splice(i, 1);
+  renderEntries();
+}
+
+function renderEntries() {
+  const area = document.getElementById('entries-area');
+  document.getElementById('count').textContent = entries.length;
+  if (!entries.length) {
+    area.innerHTML = '<em style="color:#555">Nothing yet</em>';
+    return;
+  }
+  area.innerHTML = entries.map((e, i) =>
+    `<div class="entry-line"><span>${i+1}. ${e}</span><button class="del-btn" ontouchstart="deleteEntry(${i})" onclick="delClick(event,${i})">✕</button></div>`
+  ).join('');
+  area.scrollTop = area.scrollHeight;
+}
+
+function delClick(ev, i) {
+  ev.stopPropagation();
+  deleteEntry(i);
 }
 
 function copyCSV() {
-  const lines = document.getElementById('entries').value
-    .split('\n').map(l => l.trim()).filter(l => l.length > 0);
-  const header = 'skyking_id,description,notes,status';
-  const rows = lines.map(line => {
-    const p = line.split(',').map(x => x.trim());
-    return `${p[0]||''},"${p[1]||''}","${p.slice(2).join(' ')||''}",In Stock`;
-  });
+  if (!entries.length) { alert('Nothing to download yet.'); return; }
+  const header = 'description';
+  const rows = entries.map(e => `"${e.replace(/"/g,'""')}"`);
   const csv = [header, ...rows].join('\n');
-  navigator.clipboard.writeText(csv).then(() => {
-    document.getElementById('copy-confirm').textContent = '✓ Copied!';
-  }).catch(() => {
-    const ta = document.createElement('textarea');
-    ta.value = csv;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    document.getElementById('copy-confirm').textContent = '✓ Copied!';
-  });
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const now = new Date();
+  const stamp = now.getFullYear() + String(now.getMonth()+1).padStart(2,'0') + String(now.getDate()).padStart(2,'0') + '_' + String(now.getHours()).padStart(2,'0') + String(now.getMinutes()).padStart(2,'0');
+  a.href = url;
+  a.download = 'skyking_intake_' + stamp + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  document.getElementById('copy-confirm').textContent = '✓ Downloaded!';
+  setTimeout(() => document.getElementById('copy-confirm').textContent = '', 3000);
+}
+
+function clearAll() {
+  if (!entries.length || confirm('Clear all entries?')) {
+    entries = [];
+    renderEntries();
+    document.getElementById('transcript-box').textContent = '—';
+    document.getElementById('copy-confirm').textContent = '';
+  }
 }
 </script>
 </body>
