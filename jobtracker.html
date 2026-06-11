@@ -5,383 +5,232 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>SkyKing Field Ops</title>
 <style>
-  :root {
-    --black: #0a0a0a;
-    --dark: #141414;
-    --panel: #1c1c1c;
-    --border: #2a2a2a;
-    --mid: #444;
-    --muted: #888;
-    --text: #e8e8e8;
-    --dim: #aaa;
-    --sky: #00aaff;
-    --sky-dim: #0077bb;
-    --green: #00cc66;
-    --red: #ff4444;
-    --amber: #ffaa00;
-    --white: #ffffff;
-    --radius: 10px;
-    --font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --mono: 'SF Mono', 'Fira Code', monospace;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--black);
-    color: var(--text);
-    font-family: var(--font);
-    font-size: 16px;
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-  }
+:root {
+  --black: #0a0a0a;
+  --dark: #141414;
+  --panel: #1c1c1c;
+  --border: #2a2a2a;
+  --muted: #888;
+  --text: #e8e8e8;
+  --dim: #aaa;
+  --orange: #ff6a00;
+  --orange2: #ff9a3c;
+  --green: #00cc66;
+  --red: #ff4444;
+  --amber: #ffaa00;
+  --blue: #00aaff;
+  --white: #ffffff;
+  --radius: 10px;
+  --font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono: 'SF Mono', 'Fira Code', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--black); color: var(--text); font-family: var(--font); font-size: 16px; min-height: 100vh; -webkit-font-smoothing: antialiased; }
 
-  /* HEADER */
-  header {
-    background: var(--dark);
-    border-bottom: 1px solid var(--border);
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .logo { font-size: 18px; font-weight: 700; letter-spacing: 0.04em; color: var(--white); }
-  .logo span { color: var(--sky); }
-  .status-dot {
-    width: 10px; height: 10px; border-radius: 50%;
-    background: var(--muted); display: inline-block;
-    margin-right: 6px; transition: background 0.3s;
-  }
-  .status-dot.active { background: var(--green); box-shadow: 0 0 8px var(--green); }
-  #clock { font-size: 13px; color: var(--dim); font-family: var(--mono); }
+/* HEADER */
+header {
+  background: var(--dark);
+  border-bottom: 2px solid var(--orange);
+  padding: 12px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+.logo-wrap { display: flex; align-items: center; gap: 10px; }
+.logo-icon { width: 36px; height: 36px; flex-shrink: 0; }
+.logo-text { font-size: 17px; font-weight: 800; letter-spacing: 0.06em; color: var(--white); line-height: 1.1; }
+.logo-text span { color: var(--orange); }
+.logo-sub { font-size: 10px; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; }
+.header-right { display: flex; align-items: center; gap: 8px; }
+.status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); display: inline-block; transition: background 0.3s; }
+.status-dot.active { background: var(--green); box-shadow: 0 0 8px var(--green); }
+#clock { font-size: 13px; color: var(--dim); font-family: var(--mono); }
 
-  /* NAV TABS */
-  nav {
-    display: flex;
-    background: var(--dark);
-    border-bottom: 1px solid var(--border);
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  nav::-webkit-scrollbar { display: none; }
-  nav button {
-    flex: 1;
-    min-width: 70px;
-    padding: 12px 8px;
-    background: none;
-    border: none;
-    border-bottom: 2px solid transparent;
-    color: var(--muted);
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-  nav button.active {
-    color: var(--sky);
-    border-bottom-color: var(--sky);
-  }
+/* NAV */
+nav { display: flex; background: var(--dark); border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
+nav::-webkit-scrollbar { display: none; }
+nav button { flex: 1; min-width: 70px; padding: 12px 8px; background: none; border: none; border-bottom: 2px solid transparent; color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+nav button.active { color: var(--orange); border-bottom-color: var(--orange); }
 
-  /* MAIN */
-  main { padding: 16px; max-width: 700px; margin: 0 auto; }
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
+main { padding: 16px; max-width: 700px; margin: 0 auto; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
 
-  /* CARDS */
-  .card {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px;
-    margin-bottom: 14px;
-  }
-  .card-title {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--sky);
-    margin-bottom: 14px;
-  }
+/* CARDS */
+.card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; }
+.card-title { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--orange); margin-bottom: 14px; }
 
-  /* INPUTS */
-  label { display: block; font-size: 12px; color: var(--dim); margin-bottom: 4px; margin-top: 12px; }
-  label:first-of-type { margin-top: 0; }
-  input, textarea, select {
-    width: 100%;
-    background: var(--dark);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-size: 16px;
-    font-family: var(--font);
-    padding: 10px 12px;
-    outline: none;
-    transition: border-color 0.2s;
-    -webkit-appearance: none;
-  }
-  input:focus, textarea:focus, select:focus { border-color: var(--sky); }
-  textarea { resize: vertical; min-height: 70px; }
-  select option { background: var(--dark); }
-  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+/* INPUTS */
+label { display: block; font-size: 12px; color: var(--dim); margin-bottom: 4px; margin-top: 12px; }
+label:first-of-type { margin-top: 0; }
+input, textarea, select { width: 100%; background: var(--dark); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 16px; font-family: var(--font); padding: 10px 12px; outline: none; transition: border-color 0.2s; -webkit-appearance: none; }
+input:focus, textarea:focus, select:focus { border-color: var(--orange); }
+textarea { resize: vertical; min-height: 60px; }
+select option { background: var(--dark); }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+input[readonly] { color: var(--orange); font-weight: 700; }
 
-  /* BUTTONS */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 12px 20px;
-    border-radius: 8px;
-    border: none;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-    width: 100%;
-    margin-top: 10px;
-  }
-  .btn-sky { background: var(--sky); color: var(--black); }
-  .btn-sky:hover { background: #33bbff; }
-  .btn-green { background: var(--green); color: var(--black); }
-  .btn-green:active { transform: scale(0.97); }
-  .btn-red { background: var(--red); color: var(--white); }
-  .btn-amber { background: var(--amber); color: var(--black); }
-  .btn-ghost {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--dim);
-    font-size: 13px;
-    padding: 8px 14px;
-    width: auto;
-    margin-top: 0;
-  }
-  .btn-ghost:hover { border-color: var(--sky); color: var(--sky); }
-  .btn-sm { padding: 7px 12px; font-size: 13px; width: auto; margin-top: 0; }
+/* BUTTONS */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 12px 20px; border-radius: 8px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.15s; width: 100%; margin-top: 10px; }
+.btn-orange { background: var(--orange); color: var(--white); }
+.btn-orange:hover { background: var(--orange2); }
+.btn-green { background: var(--green); color: var(--black); }
+.btn-red { background: var(--red); color: var(--white); }
+.btn-ghost { background: none; border: 1px solid var(--border); color: var(--dim); font-size: 13px; padding: 8px 14px; width: auto; margin-top: 0; }
+.btn-ghost:hover { border-color: var(--orange); color: var(--orange); }
+.btn-sm { padding: 7px 12px; font-size: 13px; width: auto; margin-top: 0; }
 
-  /* JOB STATUS BAR */
-  .job-bar {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 14px 16px;
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-  }
-  .job-bar-info { flex: 1; min-width: 0; }
-  .job-bar-name { font-weight: 700; font-size: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .job-bar-sub { font-size: 12px; color: var(--dim); margin-top: 2px; }
-  .job-timer {
-    font-family: var(--mono);
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--green);
-    letter-spacing: 0.05em;
-    white-space: nowrap;
-  }
-  .job-timer.stopped { color: var(--muted); }
+/* JOB BAR */
+.job-bar { background: var(--panel); border: 1px solid var(--orange); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.job-bar-info { flex: 1; min-width: 0; }
+.job-bar-name { font-weight: 700; font-size: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.job-bar-sub { font-size: 12px; color: var(--dim); margin-top: 2px; }
+.job-timer { font-family: var(--mono); font-size: 22px; font-weight: 700; color: var(--green); letter-spacing: 0.05em; white-space: nowrap; }
 
-  /* GPS */
-  .gps-display {
-    background: var(--dark);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-size: 13px;
-    color: var(--dim);
-    margin-top: 8px;
-    min-height: 40px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .gps-display .icon { font-size: 16px; }
-  .gps-addr { color: var(--text); font-size: 13px; }
+/* ODO DISPLAY */
+.odo-bar { background: var(--dark); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.odo-val { font-family: var(--mono); font-size: 24px; font-weight: 700; }
+.odo-val.start { color: var(--orange); }
+.odo-val.end { color: var(--blue); }
+.odo-val.trip { color: var(--green); }
+.odo-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-top: 2px; }
+.odo-col { text-align: center; flex: 1; }
+.odo-arrow { color: var(--muted); font-size: 20px; }
 
-  /* TASK LIST */
-  .task-item {
-    background: var(--dark);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 12px;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  .task-time { font-family: var(--mono); font-size: 11px; color: var(--sky); white-space: nowrap; margin-top: 2px; }
-  .task-text { font-size: 14px; flex: 1; }
-  .task-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 0 4px; }
-  .task-del:hover { color: var(--red); }
+/* GPS */
+.gps-display { background: var(--dark); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 13px; color: var(--dim); margin-top: 8px; min-height: 40px; display: flex; align-items: center; gap: 8px; }
 
-  /* JOB LIST */
-  .job-item {
-    background: var(--dark);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 14px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    transition: border-color 0.15s;
-  }
-  .job-item:hover { border-color: var(--sky); }
-  .job-item-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
-  .job-item-name { font-weight: 700; font-size: 15px; }
-  .job-item-date { font-size: 12px; color: var(--dim); white-space: nowrap; }
-  .job-item-meta { font-size: 12px; color: var(--dim); margin-top: 4px; display: flex; gap: 14px; flex-wrap: wrap; }
-  .badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-  }
-  .badge-paid { background: rgba(0,204,102,0.15); color: var(--green); border: 1px solid rgba(0,204,102,0.3); }
-  .badge-unpaid { background: rgba(255,68,68,0.12); color: var(--red); border: 1px solid rgba(255,68,68,0.25); }
-  .badge-partial { background: rgba(255,170,0,0.12); color: var(--amber); border: 1px solid rgba(255,170,0,0.25); }
-  .badge-active { background: rgba(0,170,255,0.12); color: var(--sky); border: 1px solid rgba(0,170,255,0.25); }
+/* TASK LIST */
+.task-item { background: var(--dark); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px; }
+.task-time { font-family: var(--mono); font-size: 11px; color: var(--orange); white-space: nowrap; margin-top: 2px; }
+.task-text { font-size: 14px; flex: 1; }
+.task-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 0 4px; }
+.task-del:hover { color: var(--red); }
 
-  /* INVOICE */
-  .inv-section { margin-bottom: 18px; }
-  .inv-line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
-  .inv-line:last-child { border-bottom: none; }
-  .inv-total { font-size: 18px; font-weight: 700; color: var(--sky); }
-  .inv-label { color: var(--dim); }
+/* EXPENSE LIST */
+.exp-item { background: var(--dark); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+.exp-cat { font-size: 11px; color: var(--orange); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
+.exp-desc { font-size: 14px; flex: 1; color: var(--dim); }
+.exp-amt { font-family: var(--mono); font-size: 15px; font-weight: 700; color: var(--amber); white-space: nowrap; }
+.exp-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; }
+.exp-del:hover { color: var(--red); }
+.exp-total { text-align: right; font-family: var(--mono); font-size: 16px; font-weight: 700; color: var(--amber); padding: 8px 0 0; }
 
-  /* STATS ROW */
-  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
-  .stat-box {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 14px 12px;
-    text-align: center;
-  }
-  .stat-val { font-size: 22px; font-weight: 700; color: var(--sky); font-family: var(--mono); }
-  .stat-lbl { font-size: 11px; color: var(--dim); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.06em; }
+/* JOB LIST */
+.job-item { background: var(--dark); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; cursor: pointer; transition: border-color 0.15s; }
+.job-item:hover { border-color: var(--orange); }
+.job-item-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.job-item-name { font-weight: 700; font-size: 15px; }
+.job-item-date { font-size: 12px; color: var(--dim); white-space: nowrap; }
+.job-item-meta { font-size: 12px; color: var(--dim); margin-top: 4px; display: flex; gap: 14px; flex-wrap: wrap; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; }
+.badge-paid { background: rgba(0,204,102,0.15); color: var(--green); border: 1px solid rgba(0,204,102,0.3); }
+.badge-unpaid { background: rgba(255,68,68,0.12); color: var(--red); border: 1px solid rgba(255,68,68,0.25); }
+.badge-partial { background: rgba(255,170,0,0.12); color: var(--amber); border: 1px solid rgba(255,170,0,0.25); }
 
-  /* SECTION DIVIDER */
-  .section-head {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin: 20px 0 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .section-head::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+/* STATS */
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+.stat-box { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 12px; text-align: center; }
+.stat-val { font-size: 22px; font-weight: 700; color: var(--orange); font-family: var(--mono); }
+.stat-lbl { font-size: 11px; color: var(--dim); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.06em; }
 
-  /* MODAL */
-  .modal-overlay {
-    display: none;
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.8);
-    z-index: 200;
-    align-items: flex-end;
-    justify-content: center;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 16px 16px 0 0;
-    padding: 20px 16px 32px;
-    width: 100%;
-    max-width: 700px;
-    max-height: 85vh;
-    overflow-y: auto;
-  }
-  .modal-title {
-    font-size: 17px;
-    font-weight: 700;
-    margin-bottom: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .modal-close { background: none; border: none; color: var(--muted); font-size: 22px; cursor: pointer; }
+/* INVOICE */
+.inv-line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.inv-line:last-child { border-bottom: none; }
+.inv-total { font-size: 20px; font-weight: 700; color: var(--orange); }
+.inv-label { color: var(--dim); }
 
-  /* EMPTY STATE */
-  .empty { text-align: center; padding: 48px 20px; color: var(--muted); }
-  .empty-icon { font-size: 40px; margin-bottom: 12px; }
-  .empty-text { font-size: 15px; }
+/* SECTION HEAD */
+.section-head { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 20px 0 10px; display: flex; align-items: center; gap: 8px; }
+.section-head::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-  /* TOAST */
-  #toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--green);
-    color: var(--black);
-    padding: 10px 20px;
-    border-radius: 24px;
-    font-weight: 700;
-    font-size: 14px;
-    z-index: 999;
-    transition: transform 0.3s;
-    white-space: nowrap;
-  }
-  #toast.show { transform: translateX(-50%) translateY(0); }
-  #toast.error { background: var(--red); color: var(--white); }
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; align-items: flex-end; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--panel); border: 1px solid var(--border); border-top: 2px solid var(--orange); border-radius: 16px 16px 0 0; padding: 20px 16px 32px; width: 100%; max-width: 700px; max-height: 88vh; overflow-y: auto; }
+.modal-title { font-size: 17px; font-weight: 700; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+.modal-close { background: none; border: none; color: var(--muted); font-size: 22px; cursor: pointer; }
 
-  @media print {
-    header, nav, .btn, .no-print { display: none !important; }
-    body { background: white; color: black; }
-    .card { border: 1px solid #ccc; }
-  }
+/* EMPTY */
+.empty { text-align: center; padding: 48px 20px; color: var(--muted); }
+.empty-icon { font-size: 40px; margin-bottom: 12px; }
+
+/* TOAST */
+#toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--orange); color: var(--white); padding: 10px 20px; border-radius: 24px; font-weight: 700; font-size: 14px; z-index: 999; transition: transform 0.3s; white-space: nowrap; }
+#toast.show { transform: translateX(-50%) translateY(0); }
+#toast.error { background: var(--red); }
+#toast.good { background: var(--green); color: var(--black); }
+
+@media print {
+  header, nav, .btn, .no-print { display: none !important; }
+  body { background: white; color: black; }
+  .card { border: 1px solid #ccc; }
+}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">SKY<span>KING</span> <span style="font-weight:300;color:var(--dim);font-size:14px">Field Ops</span></div>
-  <div style="display:flex;align-items:center;gap:8px">
+  <div class="logo-wrap">
+    <svg class="logo-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- broadcast tower -->
+      <rect x="16.5" y="18" width="3" height="12" fill="#ff6a00"/>
+      <rect x="14" y="28" width="8" height="2" rx="1" fill="#ff6a00"/>
+      <!-- signal arcs -->
+      <path d="M10 16 Q18 8 26 16" stroke="#ff9a3c" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M13 19 Q18 13 23 19" stroke="#ff6a00" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <!-- dot on top -->
+      <circle cx="18" cy="16" r="2" fill="#ff6a00"/>
+      <!-- camera body -->
+      <rect x="6" y="20" width="10" height="7" rx="2" fill="#333"/>
+      <rect x="4" y="22" width="3" height="3" rx="1" fill="#555"/>
+      <circle cx="11" cy="23.5" r="2" fill="#ff6a00" opacity="0.8"/>
+    </svg>
+    <div>
+      <div class="logo-text">SKY<span>KING</span></div>
+      <div class="logo-sub">Field Ops</div>
+    </div>
+  </div>
+  <div class="header-right">
     <span class="status-dot" id="statusDot"></span>
     <span id="clock">--:--:--</span>
   </div>
 </header>
 
 <nav>
-  <button class="active" onclick="showTab('job')">📋 Job</button>
-  <button onclick="showTab('log')">📝 Log</button>
-  <button onclick="showTab('invoice')">💰 Invoice</button>
-  <button onclick="showTab('history')">📁 History</button>
+  <button class="active" onclick="showTab('job',this)">📋 Job</button>
+  <button onclick="showTab('log',this)">📝 Log</button>
+  <button onclick="showTab('expenses',this)">💸 Expenses</button>
+  <button onclick="showTab('invoice',this)">💰 Invoice</button>
+  <button onclick="showTab('history',this)">📁 History</button>
 </nav>
 
 <main>
 
-<!-- ===== JOB TAB ===== -->
+<!-- JOB TAB -->
 <div class="tab-panel active" id="tab-job">
-
   <div id="noJobPanel">
     <div class="card">
-      <div class="card-title">Start New Job</div>
-      <label>Client / Company</label>
-      <input type="text" id="clientName" placeholder="e.g. LA Athletics, CIAOUSA" autocomplete="off">
-      <label>Job Name</label>
-      <input type="text" id="jobName" placeholder="e.g. Soccer — Cal FC vs LA" autocomplete="off">
-      <label>Location</label>
-      <input type="text" id="jobLocation" placeholder="Venue or address" autocomplete="off">
-      <label>Odometer In (miles)</label>
-      <input type="number" id="odoIn" placeholder="Starting odometer reading" inputmode="numeric">
-      <button class="btn btn-green" onclick="startJob()">▶ Clock In</button>
+      <div class="card-title">New Job</div>
+      <label>Client</label>
+      <select id="clientSelect" onchange="clientSelectChanged()">
+        <option value="">— Select Client —</option>
+      </select>
+      <div id="newClientWrap" style="display:none;margin-top:8px">
+        <input type="text" id="newClientInput" placeholder="Enter new client name">
+        <button class="btn btn-ghost btn-sm" style="margin-top:6px" onclick="saveNewClient()">+ Save Client</button>
+      </div>
+      <label>Job Name / Description</label>
+      <input type="text" id="jobName" placeholder="e.g. Soccer — Cal FC vs Ventura" autocomplete="off">
+      <label>Location / Venue</label>
+      <input type="text" id="jobLocation" placeholder="Stadium, address, venue name" autocomplete="off">
+      <label>Odometer START (miles)</label>
+      <input type="number" id="odoIn" placeholder="Read your dash before you leave" inputmode="numeric" style="font-size:20px;font-weight:700">
+      <button class="btn btn-orange" style="margin-top:14px" onclick="startJob()">▶ Clock In</button>
     </div>
   </div>
 
   <div id="activeJobPanel" style="display:none">
-    <div class="job-bar" id="jobBar">
+    <div class="job-bar">
       <div class="job-bar-info">
         <div class="job-bar-name" id="activeJobName">—</div>
         <div class="job-bar-sub" id="activeClientName">—</div>
@@ -389,72 +238,109 @@
       <div class="job-timer" id="jobTimer">00:00:00</div>
     </div>
 
+    <!-- ODOMETER LIVE -->
     <div class="card">
-      <div class="card-title">Location</div>
-      <div class="gps-display" id="gpsDisplay">
-        <span class="icon">📍</span>
+      <div class="card-title">🚗 Odometer</div>
+      <div class="odo-bar">
+        <div class="odo-col">
+          <div class="odo-val start" id="odoStartDisplay">—</div>
+          <div class="odo-lbl">Start</div>
+        </div>
+        <div class="odo-arrow">→</div>
+        <div class="odo-col">
+          <div class="odo-val end" id="odoEndDisplay">—</div>
+          <div class="odo-lbl">End</div>
+        </div>
+        <div class="odo-arrow">=</div>
+        <div class="odo-col">
+          <div class="odo-val trip" id="odoTripDisplay">—</div>
+          <div class="odo-lbl">Trip Miles</div>
+        </div>
+      </div>
+      <div class="row2" style="margin-top:8px">
+        <div>
+          <label>Edit Start Odo</label>
+          <input type="number" id="odoInEdit" placeholder="Forgot? Enter now" inputmode="numeric" oninput="updateOdo()">
+        </div>
+        <div>
+          <label>End Odo</label>
+          <input type="number" id="odoOutEdit" placeholder="Enter at departure" inputmode="numeric" oninput="updateOdo()">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📍 Location</div>
+      <div class="gps-display">
+        <span>📍</span>
         <span id="gpsText">Tap to get location</span>
       </div>
       <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="getGPS()">📡 Get GPS / Address</button>
     </div>
 
     <div class="card">
-      <div class="card-title">Log Task or Note</div>
-      <textarea id="taskInput" placeholder="What are you doing? Camera setup, signal check, on air, break…" rows="2"></textarea>
-      <button class="btn btn-sky" onclick="addTask()">+ Add to Log</button>
-    </div>
-
-    <div class="card">
-      <div class="card-title">🚗 Mileage</div>
-      <div class="row2">
-        <div>
-          <label>Odometer START</label>
-          <input type="number" id="odoInDisplay" placeholder="Set at clock-in" inputmode="numeric" style="font-size:20px;font-weight:700;color:var(--sky)" readonly>
-        </div>
-        <div>
-          <label>Odometer END</label>
-          <input type="number" id="odoOut" placeholder="Enter now" inputmode="numeric" style="font-size:20px;font-weight:700" oninput="calcMiles()">
-        </div>
-      </div>
-      <div id="milesResult" style="display:none;margin-top:12px;background:var(--dark);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center">
-        <div style="font-size:13px;color:var(--dim);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.08em">Trip Miles</div>
-        <div id="milesVal" style="font-size:36px;font-weight:700;color:var(--green);font-family:var(--mono)">0</div>
-      </div>
-    </div>
-
-    <div class="card">
       <div class="card-title">Clock Out</div>
-      <div>
-        <label>Rate ($/hr)</label>
-        <input type="number" id="rateHr" placeholder="0.00" inputmode="decimal">
-      </div>
-      <label>Additional Notes</label>
-      <textarea id="jobNotes" placeholder="Any final notes for this job…" rows="2"></textarea>
-      <button class="btn btn-red" onclick="clockOut()">⏹ Clock Out &amp; Save Job</button>
+      <label>Hourly Rate ($/hr) — optional</label>
+      <input type="number" id="rateHr" placeholder="0.00" inputmode="decimal">
+      <label>Final Notes</label>
+      <textarea id="jobNotes" placeholder="Anything to note about this job…" rows="2"></textarea>
+      <button class="btn btn-red" onclick="clockOut()">⏹ Clock Out &amp; Save</button>
     </div>
   </div>
-
 </div>
 
-<!-- ===== LOG TAB ===== -->
+<!-- LOG TAB -->
 <div class="tab-panel" id="tab-log">
-  <div id="logEmpty" class="empty">
-    <div class="empty-icon">📝</div>
-    <div class="empty-text">No active job. Start a job to see the log here.</div>
+  <div id="logEmpty" class="empty"><div class="empty-icon">📝</div><div>Start a job to log tasks.</div></div>
+  <div id="logAddCard" style="display:none">
+    <div class="card">
+      <div class="card-title">Add Log Entry</div>
+      <textarea id="taskInput" placeholder="Camera setup, on air, lunch, signal check…" rows="2"></textarea>
+      <button class="btn btn-orange" onclick="addTask()">+ Log It</button>
+    </div>
   </div>
   <div id="logList"></div>
 </div>
 
-<!-- ===== INVOICE TAB ===== -->
-<div class="tab-panel" id="tab-invoice">
-  <div id="invoiceEmpty" class="empty">
-    <div class="empty-icon">💰</div>
-    <div class="empty-text">Select a completed job from History to generate an invoice.</div>
+<!-- EXPENSES TAB -->
+<div class="tab-panel" id="tab-expenses">
+  <div id="expEmpty" class="empty"><div class="empty-icon">💸</div><div>Start a job to track expenses.</div></div>
+  <div id="expAddCard" style="display:none">
+    <div class="card">
+      <div class="card-title">Add Expense</div>
+      <label>Category</label>
+      <select id="expCat">
+        <option>Fuel</option>
+        <option>Parking</option>
+        <option>Meals</option>
+        <option>Equipment</option>
+        <option>Hotel</option>
+        <option>Supplies</option>
+        <option>Other</option>
+      </select>
+      <label>Description</label>
+      <input type="text" id="expDesc" placeholder="e.g. Shell on Vista Way, lot at stadium…" autocomplete="off">
+      <label>Amount ($)</label>
+      <input type="number" id="expAmt" placeholder="0.00" inputmode="decimal">
+      <button class="btn btn-orange" onclick="addExpense()">+ Add Expense</button>
+    </div>
+    <div id="expList"></div>
+    <div id="expTotalRow" style="display:none" class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="color:var(--dim);font-size:13px;text-transform:uppercase;letter-spacing:0.08em">Total Expenses</span>
+        <span id="expTotal" class="exp-total">$0.00</span>
+      </div>
+    </div>
   </div>
+</div>
+
+<!-- INVOICE TAB -->
+<div class="tab-panel" id="tab-invoice">
+  <div id="invoiceEmpty" class="empty"><div class="empty-icon">💰</div><div>Select a job from History to invoice.</div></div>
   <div id="invoicePanel" style="display:none">
     <div class="card" id="invoiceContent">
       <div class="card-title">Invoice — SkyKing Broadcast Services</div>
-      <div class="inv-section" id="invHeader"></div>
+      <div id="invHeader"></div>
       <div class="section-head">Line Items</div>
       <div id="invLines"></div>
       <div style="margin-top:16px;display:flex;justify-content:space-between;align-items:center">
@@ -463,19 +349,13 @@
       </div>
     </div>
     <div class="card no-print">
-      <div class="card-title">Payment</div>
+      <div class="card-title">Record Payment</div>
       <div class="row2">
-        <div>
-          <label>Amount Received</label>
-          <input type="number" id="payAmount" placeholder="0.00" inputmode="decimal">
-        </div>
-        <div>
-          <label>Date</label>
-          <input type="date" id="payDate">
-        </div>
+        <div><label>Amount</label><input type="number" id="payAmount" placeholder="0.00" inputmode="decimal"></div>
+        <div><label>Date</label><input type="date" id="payDate"></div>
       </div>
-      <label>Note</label>
-      <input type="text" id="payNote" placeholder="Check #, Zelle, etc.">
+      <label>Note (check #, Zelle, etc.)</label>
+      <input type="text" id="payNote" placeholder="">
       <button class="btn btn-green" onclick="recordPayment()">✓ Record Payment</button>
     </div>
     <button class="btn btn-ghost no-print" style="width:100%;margin-top:4px" onclick="window.print()">🖨 Print Invoice</button>
@@ -483,12 +363,9 @@
   </div>
 </div>
 
-<!-- ===== HISTORY TAB ===== -->
+<!-- HISTORY TAB -->
 <div class="tab-panel" id="tab-history">
-  <div id="histEmpty" class="empty">
-    <div class="empty-icon">📁</div>
-    <div class="empty-text">No completed jobs yet.</div>
-  </div>
+  <div id="histEmpty" class="empty"><div class="empty-icon">📁</div><div>No completed jobs yet.</div></div>
   <div id="histStats" style="display:none">
     <div class="stats-row">
       <div class="stat-box"><div class="stat-val" id="statJobs">0</div><div class="stat-lbl">Jobs</div></div>
@@ -512,34 +389,35 @@
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div id="modalBody"></div>
-    <button class="btn btn-sky" style="margin-top:12px" onclick="openInvoiceFromModal()">💰 Open Invoice</button>
+    <button class="btn btn-orange" style="margin-top:12px" onclick="openInvoiceFromModal()">💰 Invoice This Job</button>
     <button class="btn btn-ghost" style="width:100%;margin-top:8px;color:var(--red);border-color:var(--red)" onclick="deleteJob()">🗑 Delete Job</button>
   </div>
 </div>
 
-<div id="toast">Saved</div>
+<div id="toast"></div>
 
 <script>
-// ─── STATE ───────────────────────────────────────────────────────────────────
-let state = {
-  activeJob: null,
-  jobs: [],
-  selectedJobIdx: null
-};
+// ── DEFAULT CLIENTS ──────────────────────────────────────────────────────────
+const DEFAULT_CLIENTS = ['Califoto','It\'s a Wrap','KBNT','Nexstar PPR'];
 
-function save() { localStorage.setItem('skyking_ops', JSON.stringify(state)); }
+// ── STATE ────────────────────────────────────────────────────────────────────
+let state = { activeJob: null, jobs: [], clients: [...DEFAULT_CLIENTS], selectedJobIdx: null };
+
+function save() { try { localStorage.setItem('skyking_ops2', JSON.stringify(state)); } catch(e){} }
 function load() {
   try {
-    const d = localStorage.getItem('skyking_ops');
-    if (d) state = JSON.parse(d);
+    const d = localStorage.getItem('skyking_ops2');
+    if (d) {
+      state = JSON.parse(d);
+      if (!state.clients || !state.clients.length) state.clients = [...DEFAULT_CLIENTS];
+    }
   } catch(e) {}
 }
 
-// ─── CLOCK ───────────────────────────────────────────────────────────────────
+// ── CLOCK ────────────────────────────────────────────────────────────────────
 function updateClock() {
   const now = new Date();
-  document.getElementById('clock').textContent =
-    now.toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+  document.getElementById('clock').textContent = now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
   if (state.activeJob) updateTimer();
 }
 setInterval(updateClock, 1000);
@@ -547,71 +425,101 @@ updateClock();
 
 function updateTimer() {
   if (!state.activeJob) return;
-  const elapsed = Date.now() - state.activeJob.startTime;
-  const h = Math.floor(elapsed / 3600000);
-  const m = Math.floor((elapsed % 3600000) / 60000);
-  const s = Math.floor((elapsed % 60000) / 1000);
-  document.getElementById('jobTimer').textContent =
-    String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  const e = Date.now() - state.activeJob.startTime;
+  const h = Math.floor(e/3600000), m = Math.floor((e%3600000)/60000), s = Math.floor((e%60000)/1000);
+  document.getElementById('jobTimer').textContent = pad(h)+':'+pad(m)+':'+pad(s);
 }
+function pad(n){ return String(n).padStart(2,'0'); }
 
-// ─── TABS ────────────────────────────────────────────────────────────────────
-function showTab(name) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+// ── TABS ─────────────────────────────────────────────────────────────────────
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
-  event.currentTarget.classList.add('active');
-  if (name === 'log') renderLog();
-  if (name === 'history') renderHistory();
-  if (name === 'invoice' && state.selectedJobIdx !== null) renderInvoice(state.selectedJobIdx);
+  if (btn) btn.classList.add('active');
+  if (name==='log') renderLog();
+  if (name==='expenses') renderExpenses();
+  if (name==='history') renderHistory();
+  if (name==='invoice' && state.selectedJobIdx!==null) renderInvoice(state.selectedJobIdx);
 }
 
-// ─── JOB START / STOP ────────────────────────────────────────────────────────
+// ── CLIENTS ──────────────────────────────────────────────────────────────────
+function populateClients() {
+  const sel = document.getElementById('clientSelect');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">— Select Client —</option>';
+  state.clients.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c; o.textContent = c;
+    if (c===cur) o.selected = true;
+    sel.appendChild(o);
+  });
+  const o = document.createElement('option');
+  o.value = '__new'; o.textContent = '+ Add New Client…';
+  sel.appendChild(o);
+}
+
+function clientSelectChanged() {
+  const v = document.getElementById('clientSelect').value;
+  document.getElementById('newClientWrap').style.display = v==='__new' ? 'block' : 'none';
+}
+
+function saveNewClient() {
+  const name = document.getElementById('newClientInput').value.trim();
+  if (!name) return;
+  if (!state.clients.includes(name)) { state.clients.push(name); save(); }
+  populateClients();
+  document.getElementById('clientSelect').value = name;
+  document.getElementById('newClientWrap').style.display = 'none';
+  document.getElementById('newClientInput').value = '';
+  toast('Client saved!');
+}
+
+// ── START JOB ────────────────────────────────────────────────────────────────
 function startJob() {
-  const client = document.getElementById('clientName').value.trim();
+  const clientSel = document.getElementById('clientSelect').value;
+  const client = clientSel && clientSel !== '__new' ? clientSel : '';
   const name = document.getElementById('jobName').value.trim();
   const location = document.getElementById('jobLocation').value.trim();
-  const odoIn = document.getElementById('odoIn').value;
-  if (!client || !name) { toast('Enter client and job name', true); return; }
+  const odoIn = document.getElementById('odoIn').value.trim();
+  if (!client) { toast('Pick a client first', true); return; }
+  if (!name) { toast('Enter a job name', true); return; }
   state.activeJob = {
-    id: Date.now(),
-    client, name, location,
-    odoIn: odoIn || '',
+    id: Date.now(), client, name, location,
+    odoIn: odoIn, odoOut: '',
     startTime: Date.now(),
     startTimeStr: new Date().toLocaleString(),
-    tasks: [],
-    gpsIn: null
+    tasks: [], expenses: [], gpsIn: null, address: ''
   };
   document.getElementById('statusDot').classList.add('active');
   save();
   renderActiveJob();
   getGPS();
-  toast('Clocked in!');
+  toast('Clocked in!', false, true);
 }
 
+// ── CLOCK OUT ────────────────────────────────────────────────────────────────
 function clockOut() {
   if (!state.activeJob) return;
-  const odoOut = document.getElementById('odoOut').value;
   const rate = parseFloat(document.getElementById('rateHr').value) || 0;
   const notes = document.getElementById('jobNotes').value.trim();
   const elapsed = Date.now() - state.activeJob.startTime;
   const hours = elapsed / 3600000;
-  const miles = (odoOut && state.activeJob.odoIn) ?
-    (parseFloat(odoOut) - parseFloat(state.activeJob.odoIn)) : null;
+  const odoIn = parseFloat(state.activeJob.odoIn) || 0;
+  const odoOut = parseFloat(state.activeJob.odoOut) || 0;
+  const miles = (odoIn > 0 && odoOut > odoIn) ? odoOut - odoIn : null;
 
   const job = {
     ...state.activeJob,
     endTime: Date.now(),
     endTimeStr: new Date().toLocaleString(),
-    odoOut: odoOut || '',
-    miles: miles !== null ? Math.max(0, miles) : null,
-    rate,
+    miles, rate,
     hours: parseFloat(hours.toFixed(2)),
-    hoursDisplay: formatElapsed(elapsed),
+    hoursDisplay: fmtElapsed(elapsed),
     notes,
     laborTotal: parseFloat((hours * rate).toFixed(2)),
-    payments: [],
-    payStatus: 'unpaid'
+    expTotal: (state.activeJob.expenses||[]).reduce((a,e)=>a+e.amount,0),
+    payments: []
   };
 
   state.jobs.unshift(job);
@@ -620,30 +528,12 @@ function clockOut() {
   save();
   renderNoJob();
   renderHistory();
-  toast('Job saved!');
+  toast('Job saved!', false, true);
 }
 
-function formatElapsed(ms) {
-  const h = Math.floor(ms / 3600000);
-  const m = Math.floor((ms % 3600000) / 60000);
-  return h + 'h ' + String(m).padStart(2,'0') + 'm';
-}
-
-function calcMiles() {
-  const odoIn = parseFloat(state.activeJob && state.activeJob.odoIn) || 0;
-  const odoOut = parseFloat(document.getElementById('odoOut').value) || 0;
-  const result = document.getElementById('milesResult');
-  const val = document.getElementById('milesVal');
-  if (odoOut > 0 && odoIn > 0) {
-    const miles = Math.max(0, odoOut - odoIn);
-    val.textContent = miles.toLocaleString();
-    result.style.display = 'block';
-  } else if (odoOut > 0) {
-    val.textContent = odoOut.toLocaleString() + ' (no start odo)';
-    result.style.display = 'block';
-  } else {
-    result.style.display = 'none';
-  }
+function fmtElapsed(ms) {
+  const h = Math.floor(ms/3600000), m = Math.floor((ms%3600000)/60000);
+  return h+'h '+pad(m)+'m';
 }
 
 function renderActiveJob() {
@@ -651,309 +541,306 @@ function renderActiveJob() {
   document.getElementById('activeJobPanel').style.display = 'block';
   document.getElementById('activeJobName').textContent = state.activeJob.name;
   document.getElementById('activeClientName').textContent = state.activeJob.client;
-  if (state.activeJob.odoIn) {
-    document.getElementById('odoInDisplay').value = state.activeJob.odoIn;
-  }
+  refreshOdoDisplay();
+  if (state.activeJob.odoIn) document.getElementById('odoInEdit').value = state.activeJob.odoIn;
+  if (state.activeJob.odoOut) document.getElementById('odoOutEdit').value = state.activeJob.odoOut;
+  if (state.activeJob.address) document.getElementById('gpsText').textContent = state.activeJob.address;
   renderLog();
 }
 
 function renderNoJob() {
   document.getElementById('noJobPanel').style.display = 'block';
   document.getElementById('activeJobPanel').style.display = 'none';
-  document.getElementById('clientName').value = '';
-  document.getElementById('jobName').value = '';
-  document.getElementById('jobLocation').value = '';
-  document.getElementById('odoIn').value = '';
-  document.getElementById('odoOut').value = '';
-  document.getElementById('rateHr').value = '';
-  document.getElementById('jobNotes').value = '';
+  ['jobName','jobLocation','odoIn','odoInEdit','odoOutEdit','rateHr','jobNotes'].forEach(id=>{
+    const el = document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('clientSelect').value = '';
+  document.getElementById('newClientWrap').style.display = 'none';
+  document.getElementById('gpsText').textContent = 'Tap to get location';
 }
 
-// ─── GPS ─────────────────────────────────────────────────────────────────────
+// ── ODO ──────────────────────────────────────────────────────────────────────
+function updateOdo() {
+  if (!state.activeJob) return;
+  const inVal = document.getElementById('odoInEdit').value.trim();
+  const outVal = document.getElementById('odoOutEdit').value.trim();
+  if (inVal) state.activeJob.odoIn = inVal;
+  if (outVal) state.activeJob.odoOut = outVal;
+  save();
+  refreshOdoDisplay();
+}
+
+function refreshOdoDisplay() {
+  const odoIn = parseFloat(state.activeJob.odoIn) || 0;
+  const odoOut = parseFloat(state.activeJob.odoOut) || 0;
+  document.getElementById('odoStartDisplay').textContent = odoIn > 0 ? odoIn.toLocaleString() : '—';
+  document.getElementById('odoEndDisplay').textContent = odoOut > 0 ? odoOut.toLocaleString() : '—';
+  if (odoIn > 0 && odoOut > odoIn) {
+    document.getElementById('odoTripDisplay').textContent = Math.round(odoOut - odoIn).toLocaleString();
+  } else {
+    document.getElementById('odoTripDisplay').textContent = '—';
+  }
+}
+
+// ── GPS ──────────────────────────────────────────────────────────────────────
 function getGPS() {
   const el = document.getElementById('gpsText');
   el.textContent = 'Getting location…';
   if (!navigator.geolocation) { el.textContent = 'GPS not available'; return; }
   navigator.geolocation.getCurrentPosition(async pos => {
-    const lat = pos.coords.latitude.toFixed(6);
-    const lng = pos.coords.longitude.toFixed(6);
-    el.textContent = `${lat}, ${lng} — looking up address…`;
-    if (state.activeJob && !state.activeJob.gpsIn) {
-      state.activeJob.gpsIn = { lat, lng };
-    }
+    const lat = pos.coords.latitude.toFixed(6), lng = pos.coords.longitude.toFixed(6);
+    el.textContent = `${lat}, ${lng}…`;
     try {
       const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
       const data = await res.json();
       const addr = data.display_name || `${lat}, ${lng}`;
-      el.innerHTML = `<span class="gps-addr">${addr}</span>`;
+      el.textContent = addr;
       if (state.activeJob) { state.activeJob.address = addr; save(); }
-    } catch(e) {
-      el.textContent = `${lat}, ${lng}`;
-    }
-  }, err => {
-    el.textContent = 'Location denied or unavailable';
-  }, { enableHighAccuracy: true, timeout: 10000 });
+    } catch(e) { el.textContent = `${lat}, ${lng}`; }
+  }, ()=>{ el.textContent = 'Location unavailable'; }, {enableHighAccuracy:true,timeout:10000});
 }
 
-// ─── TASK LOG ────────────────────────────────────────────────────────────────
+// ── TASK LOG ─────────────────────────────────────────────────────────────────
 function addTask() {
   if (!state.activeJob) return;
   const text = document.getElementById('taskInput').value.trim();
   if (!text) return;
-  state.activeJob.tasks.push({
-    time: new Date().toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit',hour12:true}),
-    text
-  });
+  state.activeJob.tasks.push({ time: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true}), text });
   document.getElementById('taskInput').value = '';
-  save();
-  renderLog();
-  toast('Logged');
+  save(); renderLog(); toast('Logged');
 }
 
-function deleteTask(idx) {
+function deleteTask(i) {
   if (!state.activeJob) return;
-  state.activeJob.tasks.splice(idx, 1);
-  save();
-  renderLog();
+  state.activeJob.tasks.splice(i,1); save(); renderLog();
 }
 
 function renderLog() {
   const list = document.getElementById('logList');
   const empty = document.getElementById('logEmpty');
-  if (!state.activeJob) {
-    list.innerHTML = '';
-    empty.style.display = 'block';
-    return;
-  }
-  empty.style.display = 'none';
+  const addCard = document.getElementById('logAddCard');
+  if (!state.activeJob) { list.innerHTML=''; empty.style.display='block'; addCard.style.display='none'; return; }
+  empty.style.display='none'; addCard.style.display='block';
   const tasks = state.activeJob.tasks;
-  if (!tasks.length) {
-    list.innerHTML = '<div class="empty" style="padding:24px"><div class="empty-text">No log entries yet.</div></div>';
-    return;
-  }
-  list.innerHTML = tasks.slice().reverse().map((t, ri) => {
-    const i = tasks.length - 1 - ri;
-    return `<div class="task-item">
-      <span class="task-time">${t.time}</span>
-      <span class="task-text">${escHtml(t.text)}</span>
-      <button class="task-del" onclick="deleteTask(${i})">✕</button>
-    </div>`;
-  }).join('');
+  list.innerHTML = tasks.length
+    ? tasks.slice().reverse().map((t,ri)=>{
+        const i = tasks.length-1-ri;
+        return `<div class="task-item"><span class="task-time">${t.time}</span><span class="task-text">${esc(t.text)}</span><button class="task-del" onclick="deleteTask(${i})">✕</button></div>`;
+      }).join('')
+    : '<div class="empty" style="padding:20px"><div>No entries yet.</div></div>';
 }
 
-// ─── HISTORY ─────────────────────────────────────────────────────────────────
+// ── EXPENSES ─────────────────────────────────────────────────────────────────
+function addExpense() {
+  if (!state.activeJob) return;
+  const cat = document.getElementById('expCat').value;
+  const desc = document.getElementById('expDesc').value.trim();
+  const amount = parseFloat(document.getElementById('expAmt').value) || 0;
+  if (!amount) { toast('Enter an amount', true); return; }
+  if (!state.activeJob.expenses) state.activeJob.expenses = [];
+  state.activeJob.expenses.push({ cat, desc, amount });
+  document.getElementById('expDesc').value = '';
+  document.getElementById('expAmt').value = '';
+  save(); renderExpenses(); toast('Expense added');
+}
+
+function deleteExpense(i) {
+  if (!state.activeJob) return;
+  state.activeJob.expenses.splice(i,1); save(); renderExpenses();
+}
+
+function renderExpenses() {
+  const empty = document.getElementById('expEmpty');
+  const addCard = document.getElementById('expAddCard');
+  const list = document.getElementById('expList');
+  const totalRow = document.getElementById('expTotalRow');
+  if (!state.activeJob) { empty.style.display='block'; addCard.style.display='none'; return; }
+  empty.style.display='none'; addCard.style.display='block';
+  const exps = state.activeJob.expenses || [];
+  const total = exps.reduce((a,e)=>a+e.amount,0);
+  list.innerHTML = exps.length
+    ? exps.map((e,i)=>`<div class="exp-item">
+        <span class="exp-cat">${esc(e.cat)}</span>
+        <span class="exp-desc">${esc(e.desc||'')}</span>
+        <span class="exp-amt">$${e.amount.toFixed(2)}</span>
+        <button class="exp-del" onclick="deleteExpense(${i})">✕</button>
+      </div>`).join('')
+    : '';
+  totalRow.style.display = exps.length ? 'block' : 'none';
+  document.getElementById('expTotal').textContent = '$'+total.toFixed(2);
+}
+
+// ── HISTORY ──────────────────────────────────────────────────────────────────
 function renderHistory() {
   const list = document.getElementById('histList');
   const empty = document.getElementById('histEmpty');
   const stats = document.getElementById('histStats');
   const btns = document.getElementById('histButtons');
-  if (!state.jobs.length) {
-    empty.style.display = 'block';
-    stats.style.display = 'none';
-    btns.style.display = 'none';
-    list.innerHTML = '';
-    return;
-  }
-  empty.style.display = 'none';
-  stats.style.display = 'grid';
-  btns.style.display = 'block';
-  const totalHours = state.jobs.reduce((a,j) => a + (j.hours||0), 0);
-  const totalMiles = state.jobs.reduce((a,j) => a + (j.miles||0), 0);
+  if (!state.jobs.length) { empty.style.display='block'; stats.style.display='none'; btns.style.display='none'; list.innerHTML=''; return; }
+  empty.style.display='none'; stats.style.display='grid'; btns.style.display='block';
+  const totalHours = state.jobs.reduce((a,j)=>a+(j.hours||0),0);
+  const totalMiles = state.jobs.reduce((a,j)=>a+(j.miles||0),0);
   document.getElementById('statJobs').textContent = state.jobs.length;
   document.getElementById('statHours').textContent = totalHours.toFixed(1);
   document.getElementById('statMiles').textContent = Math.round(totalMiles);
-  list.innerHTML = state.jobs.map((job, i) => {
-    const badge = payBadge(job);
+  list.innerHTML = state.jobs.map((job,i)=>{
+    const paid = (job.payments||[]).reduce((a,p)=>a+p.amount,0);
+    let badge = '';
+    if (job.laborTotal > 0) {
+      if (paid >= job.laborTotal) badge = '<span class="badge badge-paid">PAID</span>';
+      else if (paid > 0) badge = '<span class="badge badge-partial">PARTIAL</span>';
+      else badge = '<span class="badge badge-unpaid">UNPAID</span>';
+    }
     return `<div class="job-item" onclick="openJobModal(${i})">
       <div class="job-item-header">
-        <span class="job-item-name">${escHtml(job.name)}</span>
-        <span class="job-item-date">${formatDate(job.startTime)}</span>
+        <span class="job-item-name">${esc(job.name)}</span>
+        <span class="job-item-date">${fmtDate(job.startTime)}</span>
       </div>
       <div class="job-item-meta">
-        <span>${escHtml(job.client)}</span>
+        <span>${esc(job.client)}</span>
         <span>⏱ ${job.hoursDisplay}</span>
-        ${job.miles !== null ? `<span>🚗 ${Math.round(job.miles)} mi</span>` : ''}
-        ${job.rate ? `<span>💵 $${job.laborTotal.toFixed(2)}</span>` : ''}
+        ${job.miles!==null&&job.miles>0?`<span>🚗 ${Math.round(job.miles)} mi</span>`:''}
+        ${job.laborTotal?`<span>💵 $${job.laborTotal.toFixed(2)}</span>`:''}
+        ${job.expTotal?`<span>💸 $${job.expTotal.toFixed(2)}</span>`:''}
         ${badge}
       </div>
     </div>`;
   }).join('');
 }
 
-function payBadge(job) {
-  const paid = job.payments ? job.payments.reduce((a,p) => a + p.amount, 0) : 0;
-  if (paid >= job.laborTotal && job.laborTotal > 0) return `<span class="badge badge-paid">PAID</span>`;
-  if (paid > 0) return `<span class="badge badge-partial">PARTIAL</span>`;
-  if (job.laborTotal > 0) return `<span class="badge badge-unpaid">UNPAID</span>`;
-  return '';
-}
+function fmtDate(ts){ return new Date(ts).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
 
-function formatDate(ts) {
-  return new Date(ts).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
-}
-
-// ─── JOB MODAL ───────────────────────────────────────────────────────────────
+// ── MODAL ────────────────────────────────────────────────────────────────────
 function openJobModal(idx) {
   state.selectedJobIdx = idx;
   const job = state.jobs[idx];
+  const paid = (job.payments||[]).reduce((a,p)=>a+p.amount,0);
   document.getElementById('modalTitle').textContent = job.name;
-  const paid = job.payments ? job.payments.reduce((a,p) => a + p.amount, 0) : 0;
   document.getElementById('modalBody').innerHTML = `
-    <div style="font-size:14px;line-height:1.8;color:var(--dim)">
-      <div><b style="color:var(--text)">Client:</b> ${escHtml(job.client)}</div>
-      <div><b style="color:var(--text)">Date:</b> ${job.startTimeStr}</div>
+    <div style="font-size:14px;line-height:2;color:var(--dim)">
+      <div><b style="color:var(--text)">Client:</b> ${esc(job.client)}</div>
+      <div><b style="color:var(--text)">Clock In:</b> ${job.startTimeStr}</div>
       <div><b style="color:var(--text)">Clock Out:</b> ${job.endTimeStr}</div>
       <div><b style="color:var(--text)">Hours:</b> ${job.hoursDisplay} (${job.hours} hrs)</div>
-      ${job.miles !== null ? `<div><b style="color:var(--text)">Miles:</b> ${Math.round(job.miles)} mi (${job.odoIn} → ${job.odoOut})</div>` : ''}
-      ${job.address ? `<div><b style="color:var(--text)">Location:</b> ${escHtml(job.address)}</div>` : ''}
-      ${job.rate ? `<div><b style="color:var(--text)">Rate:</b> $${job.rate}/hr</div>` : ''}
-      ${job.laborTotal ? `<div><b style="color:var(--text)">Labor Total:</b> $${job.laborTotal.toFixed(2)}</div>` : ''}
-      ${paid ? `<div><b style="color:var(--green)">Paid:</b> $${paid.toFixed(2)}</div>` : ''}
-      ${job.notes ? `<div style="margin-top:8px"><b style="color:var(--text)">Notes:</b> ${escHtml(job.notes)}</div>` : ''}
+      ${job.miles!==null&&job.miles>0?`<div><b style="color:var(--text)">Miles:</b> ${Math.round(job.miles)} mi (${job.odoIn||'?'} → ${job.odoOut||'?'})</div>`:''}
+      ${job.address?`<div><b style="color:var(--text)">Location:</b> ${esc(job.address)}</div>`:''}
+      ${job.rate?`<div><b style="color:var(--text)">Rate:</b> $${job.rate}/hr → Labor: $${job.laborTotal.toFixed(2)}</div>`:''}
+      ${job.expTotal?`<div><b style="color:var(--text)">Expenses:</b> $${job.expTotal.toFixed(2)}</div>`:''}
+      ${paid?`<div><b style="color:var(--green)">Paid:</b> $${paid.toFixed(2)}</div>`:''}
+      ${job.notes?`<div style="margin-top:6px"><b style="color:var(--text)">Notes:</b> ${esc(job.notes)}</div>`:''}
     </div>
-    ${job.tasks && job.tasks.length ? `
-      <div class="section-head" style="margin-top:16px">Task Log (${job.tasks.length})</div>
-      ${job.tasks.map(t => `<div class="task-item"><span class="task-time">${t.time}</span><span class="task-text">${escHtml(t.text)}</span></div>`).join('')}
-    ` : ''}
+    ${job.tasks&&job.tasks.length?`<div class="section-head" style="margin-top:14px">Log (${job.tasks.length})</div>${job.tasks.map(t=>`<div class="task-item"><span class="task-time">${t.time}</span><span class="task-text">${esc(t.text)}</span></div>`).join('')}`:''}
+    ${job.expenses&&job.expenses.length?`<div class="section-head">Expenses</div>${job.expenses.map(e=>`<div class="exp-item"><span class="exp-cat">${esc(e.cat)}</span><span class="exp-desc">${esc(e.desc||'')}</span><span class="exp-amt">$${e.amount.toFixed(2)}</span></div>`).join('')}`:''}
   `;
   document.getElementById('jobModal').classList.add('open');
 }
 
-let pendingDeleteIdx = null;
 function deleteJob() {
-  if (state.selectedJobIdx === null) return;
+  if (state.selectedJobIdx===null) return;
   if (!confirm('Delete this job? Cannot be undone.')) return;
-  state.jobs.splice(state.selectedJobIdx, 1);
-  state.selectedJobIdx = null;
-  save();
-  closeModal();
-  renderHistory();
-  toast('Job deleted');
+  state.jobs.splice(state.selectedJobIdx,1);
+  state.selectedJobIdx=null; save(); closeModal(); renderHistory(); toast('Deleted');
 }
 
-function closeModal() {
-  document.getElementById('jobModal').classList.remove('open');
-}
+function closeModal() { document.getElementById('jobModal').classList.remove('open'); }
 
 function openInvoiceFromModal() {
   closeModal();
   renderInvoice(state.selectedJobIdx);
-  document.querySelectorAll('nav button').forEach((b,i) => {
-    b.classList.remove('active');
-    if (i === 2) b.classList.add('active');
-  });
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach((b,i)=>{ b.classList.remove('active'); if(i===3) b.classList.add('active'); });
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('tab-invoice').classList.add('active');
 }
 
-// ─── INVOICE ─────────────────────────────────────────────────────────────────
+// ── INVOICE ──────────────────────────────────────────────────────────────────
 function renderInvoice(idx) {
-  if (idx === null || idx === undefined || !state.jobs[idx]) {
-    document.getElementById('invoiceEmpty').style.display = 'block';
-    document.getElementById('invoicePanel').style.display = 'none';
-    return;
+  if (idx===null||idx===undefined||!state.jobs[idx]) {
+    document.getElementById('invoiceEmpty').style.display='block';
+    document.getElementById('invoicePanel').style.display='none'; return;
   }
-  document.getElementById('invoiceEmpty').style.display = 'none';
-  document.getElementById('invoicePanel').style.display = 'block';
+  document.getElementById('invoiceEmpty').style.display='none';
+  document.getElementById('invoicePanel').style.display='block';
   const job = state.jobs[idx];
-  const paid = job.payments ? job.payments.reduce((a,p) => a + p.amount, 0) : 0;
-  const invNum = 'SK-' + new Date(job.startTime).toISOString().slice(2,10).replace(/-/g,'') + '-' + String(idx+1).padStart(3,'0');
-
+  const paid = (job.payments||[]).reduce((a,p)=>a+p.amount,0);
+  const invNum = 'SK-'+new Date(job.startTime).toISOString().slice(2,10).replace(/-/g,'')+'-'+String(idx+1).padStart(3,'0');
   document.getElementById('invHeader').innerHTML = `
     <div class="inv-line"><span class="inv-label">Invoice #</span><span>${invNum}</span></div>
-    <div class="inv-line"><span class="inv-label">Date</span><span>${formatDate(job.startTime)}</span></div>
-    <div class="inv-line"><span class="inv-label">Bill To</span><span>${escHtml(job.client)}</span></div>
-    <div class="inv-line"><span class="inv-label">Job</span><span>${escHtml(job.name)}</span></div>
-    ${job.address ? `<div class="inv-line"><span class="inv-label">Location</span><span style="text-align:right;max-width:60%">${escHtml(job.address)}</span></div>` : ''}
+    <div class="inv-line"><span class="inv-label">Date</span><span>${fmtDate(job.startTime)}</span></div>
+    <div class="inv-line"><span class="inv-label">Bill To</span><span>${esc(job.client)}</span></div>
+    <div class="inv-line"><span class="inv-label">Job</span><span>${esc(job.name)}</span></div>
+    ${job.address?`<div class="inv-line"><span class="inv-label">Location</span><span style="text-align:right;max-width:55%">${esc(job.address)}</span></div>`:''}
   `;
-
-  let lines = '';
-  let total = 0;
+  let lines = '', total = 0;
   if (job.rate && job.hours) {
     lines += `<div class="inv-line"><span>Labor — ${job.hoursDisplay} @ $${job.rate}/hr</span><span>$${job.laborTotal.toFixed(2)}</span></div>`;
     total += job.laborTotal;
   }
-  if (job.miles !== null && job.miles > 0) {
-    lines += `<div class="inv-line"><span>Mileage — ${Math.round(job.miles)} mi (info only)</span><span>—</span></div>`;
+  if (job.expenses && job.expenses.length) {
+    job.expenses.forEach(e=>{
+      lines += `<div class="inv-line"><span>${esc(e.cat)}${e.desc?' — '+esc(e.desc):''}</span><span>$${e.amount.toFixed(2)}</span></div>`;
+      total += e.amount;
+    });
+  }
+  if (job.miles!==null && job.miles>0) {
+    lines += `<div class="inv-line" style="color:var(--dim)"><span>Mileage — ${Math.round(job.miles)} mi (info only)</span><span>—</span></div>`;
   }
   if (paid > 0) {
     lines += `<div class="inv-line" style="color:var(--green)"><span>Payment Received</span><span>-$${paid.toFixed(2)}</span></div>`;
     total -= paid;
   }
-  document.getElementById('invLines').innerHTML = lines || '<div class="inv-line"><span class="inv-label">No billable items</span><span>—</span></div>';
-  document.getElementById('invTotal').textContent = '$' + Math.max(0, total).toFixed(2);
+  document.getElementById('invLines').innerHTML = lines||'<div class="inv-line"><span class="inv-label">No billable items</span><span>—</span></div>';
+  document.getElementById('invTotal').textContent = '$'+Math.max(0,total).toFixed(2);
   document.getElementById('payDate').value = new Date().toISOString().split('T')[0];
 }
 
 function recordPayment() {
-  if (state.selectedJobIdx === null) return;
+  if (state.selectedJobIdx===null) return;
   const amount = parseFloat(document.getElementById('payAmount').value);
-  if (!amount || amount <= 0) { toast('Enter a payment amount', true); return; }
+  if (!amount||amount<=0) { toast('Enter a payment amount',true); return; }
   const date = document.getElementById('payDate').value;
   const note = document.getElementById('payNote').value.trim();
-  if (!state.jobs[state.selectedJobIdx].payments) state.jobs[state.selectedJobIdx].payments = [];
-  state.jobs[state.selectedJobIdx].payments.push({ amount, date, note });
-  save();
-  renderInvoice(state.selectedJobIdx);
-  renderHistory();
-  document.getElementById('payAmount').value = '';
-  document.getElementById('payNote').value = '';
-  toast('Payment recorded!');
+  if (!state.jobs[state.selectedJobIdx].payments) state.jobs[state.selectedJobIdx].payments=[];
+  state.jobs[state.selectedJobIdx].payments.push({amount,date,note});
+  save(); renderInvoice(state.selectedJobIdx); renderHistory();
+  document.getElementById('payAmount').value='';
+  document.getElementById('payNote').value='';
+  toast('Payment recorded!',false,true);
 }
 
-// ─── CSV EXPORT ───────────────────────────────────────────────────────────────
-function exportCSV() {
-  if (state.selectedJobIdx === null) return;
-  const job = state.jobs[state.selectedJobIdx];
-  exportJobCSV([job]);
-}
-
-function exportAllCSV() {
-  exportJobCSV(state.jobs);
-}
-
-function exportJobCSV(jobs) {
-  const rows = [['Date','Client','Job','Location','Clock In','Clock Out','Hours','Miles','Odo In','Odo Out','Rate','Labor Total','Paid','Balance','Notes']];
-  jobs.forEach(j => {
-    const paid = j.payments ? j.payments.reduce((a,p) => a + p.amount, 0) : 0;
-    rows.push([
-      formatDate(j.startTime), j.client, j.name, j.address||j.location||'',
-      j.startTimeStr, j.endTimeStr, j.hours, j.miles!==null?Math.round(j.miles):'',
-      j.odoIn, j.odoOut, j.rate||'', j.laborTotal||'', paid.toFixed(2),
-      Math.max(0,(j.laborTotal||0)-paid).toFixed(2), j.notes||''
-    ]);
+// ── CSV ──────────────────────────────────────────────────────────────────────
+function exportCSV() { if(state.selectedJobIdx!==null) doExportCSV([state.jobs[state.selectedJobIdx]]); }
+function exportAllCSV() { doExportCSV(state.jobs); }
+function doExportCSV(jobs) {
+  const rows=[['Date','Client','Job','Location','Clock In','Clock Out','Hours','Miles','Odo Start','Odo End','Rate','Labor','Expenses','Paid','Balance','Notes']];
+  jobs.forEach(j=>{
+    const paid=(j.payments||[]).reduce((a,p)=>a+p.amount,0);
+    const total=(j.laborTotal||0)+(j.expTotal||0);
+    rows.push([fmtDate(j.startTime),j.client,j.name,j.address||j.location||'',j.startTimeStr,j.endTimeStr,j.hours,j.miles!==null?Math.round(j.miles):'',j.odoIn||'',j.odoOut||'',j.rate||'',j.laborTotal||'',j.expTotal||'',paid.toFixed(2),Math.max(0,total-paid).toFixed(2),j.notes||'']);
   });
-  const csv = rows.map(r => r.map(v => '"'+(String(v||'').replace(/"/g,'""'))+'"').join(',')).join('\n');
-  const blob = new Blob([csv], {type:'text/csv'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'skyking_jobs_' + new Date().toISOString().slice(0,10) + '.csv';
-  a.click();
-  URL.revokeObjectURL(url);
-  toast('CSV exported!');
+  const csv=rows.map(r=>r.map(v=>'"'+(String(v||'').replace(/"/g,'""'))+'"').join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download='skyking_jobs_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click(); toast('CSV exported!',false,true);
 }
 
-// ─── UTILS ───────────────────────────────────────────────────────────────────
-function escHtml(str) {
-  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+// ── UTILS ────────────────────────────────────────────────────────────────────
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-function toast(msg, isError) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = isError ? 'error' : '';
+function toast(msg, isError, isGood) {
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className = isError ? 'error' : isGood ? 'good' : '';
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
+  setTimeout(()=>t.classList.remove('show'),2200);
 }
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
+// ── INIT ─────────────────────────────────────────────────────────────────────
 load();
+populateClients();
 if (state.activeJob) {
   renderActiveJob();
   document.getElementById('statusDot').classList.add('active');
-  document.getElementById('activeJobName').textContent = state.activeJob.name;
-  document.getElementById('activeClientName').textContent = state.activeJob.client;
 }
 renderHistory();
 </script>
