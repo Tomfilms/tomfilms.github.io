@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SkyKing Cable Calc</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #0a0a0a; color: #f0f0f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; }
+header { background: #141414; border-bottom: 2px solid #ff6a00; padding: 14px 16px; display: flex; align-items: center; gap: 10px; }
+.logo { font-size: 18px; font-weight: 800; letter-spacing: 0.06em; }
+.logo span { color: #ff6a00; }
+.sub { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.1em; }
+main { padding: 20px 16px; max-width: 500px; margin: 0 auto; }
+
+/* INPUTS */
+.inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.inp-group label { display: block; font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+input[type=number] { width: 100%; font-size: 32px; font-weight: 700; padding: 14px 12px; background: #1c1c1c; border: 1px solid #333; border-radius: 10px; color: #fff; outline: none; -webkit-appearance: none; }
+input[type=number]:focus { border-color: #ff6a00; }
+
+/* RESULT */
+.result-box { background: #1c1c1c; border: 1px solid #333; border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 16px; }
+.result-label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+.result-big { font-size: 72px; font-weight: 800; color: #ff6a00; line-height: 1; }
+.result-unit { font-size: 20px; color: #888; margin-top: 4px; }
+.result-exact { font-size: 13px; color: #666; margin-top: 8px; }
+
+/* STATS */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+.stat { background: #1c1c1c; border: 1px solid #2a2a2a; border-radius: 10px; padding: 14px 10px; text-align: center; }
+.stat-val { font-size: 18px; font-weight: 700; color: #fff; }
+.stat-lbl { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 3px; }
+
+/* COLOR GUIDE */
+.section-title { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #666; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.section-title::after { content: ''; flex: 1; height: 1px; background: #222; }
+.colors { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px; }
+.color-btn { display: flex; align-items: center; gap: 10px; background: #1c1c1c; border: 1px solid #2a2a2a; border-radius: 8px; padding: 10px 12px; cursor: pointer; transition: border-color 0.15s; }
+.color-btn:hover { border-color: #ff6a00; }
+.color-swatch { width: 20px; height: 20px; border-radius: 4px; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.15); }
+.color-info { text-align: left; }
+.color-name { font-size: 13px; font-weight: 600; }
+.color-len { font-size: 11px; color: #888; }
+
+/* PRESETS */
+.presets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+.preset-btn { background: #1c1c1c; border: 1px solid #333; color: #ccc; padding: 8px 14px; border-radius: 6px; font-size: 14px; cursor: pointer; transition: all 0.15s; }
+.preset-btn:hover { border-color: #ff6a00; color: #ff6a00; }
+.preset-lbl { font-size: 11px; color: #666; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<header>
+  <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
+    <rect width="36" height="36" rx="8" fill="#111"/>
+    <rect x="16.5" y="18" width="3" height="12" fill="#ff6a00"/>
+    <rect x="13" y="28" width="10" height="2.5" rx="1.2" fill="#ff6a00"/>
+    <path d="M10 16 Q18 8 26 16" stroke="#ff9a3c" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M13 19 Q18 13 23 19" stroke="#ff6a00" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="18" cy="16" r="2.2" fill="#ff6a00"/>
+  </svg>
+  <div>
+    <div class="logo">SKY<span>KING</span></div>
+    <div class="sub">Cable Length Calc</div>
+  </div>
+</header>
+
+<main>
+  <div class="inputs">
+    <div class="inp-group">
+      <label>Diameter (in)</label>
+      <input type="number" id="diam" placeholder="7.5" step="0.25" min="1" max="48" inputmode="decimal" oninput="calc()">
+    </div>
+    <div class="inp-group">
+      <label>Coils</label>
+      <input type="number" id="coils" placeholder="10" step="1" min="1" max="200" inputmode="numeric" oninput="calc()">
+    </div>
+  </div>
+
+  <div class="result-box">
+    <div class="result-label">Estimated Length</div>
+    <div class="result-big" id="resFt">—</div>
+    <div class="result-unit" id="resUnit">feet</div>
+    <div class="result-exact" id="resExact"></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-val" id="statCirc">—</div><div class="stat-lbl">Circ (in)</div></div>
+    <div class="stat"><div class="stat-val" id="statIn">—</div><div class="stat-lbl">Total in</div></div>
+    <div class="stat"><div class="stat-val" id="statFtEx">—</div><div class="stat-lbl">Exact ft</div></div>
+  </div>
+
+  <div class="section-title">Common Diameters</div>
+  <div class="preset-lbl">Tap to set diameter →</div>
+  <div class="presets">
+    <button class="preset-btn" onclick="setDiam(6)">6"</button>
+    <button class="preset-btn" onclick="setDiam(6.25)">6.25"</button>
+    <button class="preset-btn" onclick="setDiam(7.5)">7.5"</button>
+    <button class="preset-btn" onclick="setDiam(9)">9"</button>
+    <button class="preset-btn" onclick="setDiam(10)">10"</button>
+    <button class="preset-btn" onclick="setDiam(12)">12"</button>
+  </div>
+
+  <div class="section-title" style="margin-top:20px">SkyKing Color Code</div>
+  <div class="colors">
+    <div class="color-btn" onclick="setLen(6)">
+      <div class="color-swatch" style="background:#FFD700"></div>
+      <div class="color-info"><div class="color-name">Yellow</div><div class="color-len">6 ft</div></div>
+    </div>
+    <div class="color-btn" onclick="setLen(10)">
+      <div class="color-swatch" style="background:#228B22"></div>
+      <div class="color-info"><div class="color-name">Green</div><div class="color-len">10 ft</div></div>
+    </div>
+    <div class="color-btn" onclick="setLen(15)">
+      <div class="color-swatch" style="background:#1E90FF"></div>
+      <div class="color-info"><div class="color-name">Blue</div><div class="color-len">15 ft</div></div>
+    </div>
+    <div class="color-btn" onclick="setLen(25)">
+      <div class="color-swatch" style="background:#cc0000"></div>
+      <div class="color-info"><div class="color-name">Red</div><div class="color-len">25 ft</div></div>
+    </div>
+    <div class="color-btn" onclick="setLen(50)">
+      <div class="color-swatch" style="background:#ff6a00"></div>
+      <div class="color-info"><div class="color-name">Orange</div><div class="color-len">50 ft</div></div>
+    </div>
+    <div class="color-btn" onclick="setLen(75)">
+      <div class="color-swatch" style="background:#f0f0f0"></div>
+      <div class="color-info"><div class="color-name" style="color:#333">White</div><div class="color-len">75 ft</div></div>
+    </div>
+    <div class="color-btn" onclick="setLen(100)">
+      <div class="color-swatch" style="background:#111;border-color:#555"></div>
+      <div class="color-info"><div class="color-name">Black</div><div class="color-len">100 ft</div></div>
+    </div>
+    <div class="color-btn" onclick="setLen(0)">
+      <div class="color-swatch" style="background:#9B59B6"></div>
+      <div class="color-info"><div class="color-name">Purple</div><div class="color-len">Custom</div></div>
+    </div>
+  </div>
+</main>
+
+<script>
+function calc() {
+  const d = parseFloat(document.getElementById('diam').value);
+  const c = parseFloat(document.getElementById('coils').value);
+  if (!d || !c) {
+    document.getElementById('resFt').textContent = '—';
+    document.getElementById('resExact').textContent = '';
+    document.getElementById('statCirc').textContent = '—';
+    document.getElementById('statIn').textContent = '—';
+    document.getElementById('statFtEx').textContent = '—';
+    return;
+  }
+  const circ = d * Math.PI;
+  const totalIn = circ * c;
+  const totalFt = totalIn / 12;
+  const rounded = Math.round(totalFt);
+  document.getElementById('resFt').textContent = rounded;
+  document.getElementById('resExact').textContent = `(${totalFt.toFixed(1)} ft exact)`;
+  document.getElementById('statCirc').textContent = circ.toFixed(1);
+  document.getElementById('statIn').textContent = Math.round(totalIn);
+  document.getElementById('statFtEx').textContent = totalFt.toFixed(2);
+}
+
+function setDiam(d) {
+  document.getElementById('diam').value = d;
+  calc();
+}
+
+function setLen(ft) {
+  if (!ft) return;
+  const d = parseFloat(document.getElementById('diam').value);
+  if (!d) { alert('Set diameter first'); return; }
+  const circ = d * Math.PI;
+  const neededIn = ft * 12;
+  const coils = Math.round(neededIn / circ);
+  document.getElementById('coils').value = coils;
+  calc();
+}
+</script>
+</body>
+</html>
