@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkyKing Cable Reference</title>
+<style>
+:root{
+  --bg:#0a0a0a;--s1:#141414;--s2:#1e1e1e;--b1:#2a2a2a;
+  --text:#f0ede8;--t2:#888;--t3:#444;
+  --gold:#f0b429;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);padding:16px;max-width:600px;margin:0 auto;}
+h1{font-size:22px;font-weight:800;color:var(--gold);margin-bottom:4px;}
+.sub{font-size:13px;color:var(--t2);margin-bottom:24px;}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--t2);margin:24px 0 10px;}
+/* COLOR CODE */
+.swatch-grid{display:flex;flex-direction:column;gap:8px;}
+.swatch{display:flex;align-items:center;gap:14px;background:var(--s1);border:1px solid var(--b1);border-radius:10px;padding:10px 14px;}
+.dot{width:36px;height:36px;border-radius:50%;flex-shrink:0;border:2px solid rgba(255,255,255,.15);}
+.dot.yellow{background:#f5e642;}
+.dot.red{background:#ef4444;}
+.dot.blue{background:#3b82f6;}
+.dot.white{background:#f0ede8;border-color:#555;}
+.dot.orange{background:#f97316;}
+.dot.black{background:#111;border-color:#555;position:relative;}
+.dot.black::after{content:'?';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:14px;font-weight:700;color:#888;}
+.sw-info{flex:1;}
+.sw-len{font-size:20px;font-weight:800;line-height:1;}
+.sw-note{font-size:12px;color:var(--t2);margin-top:2px;}
+/* CATEGORIES */
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.cat{background:var(--s1);border:1px solid var(--b1);border-radius:10px;padding:10px 12px;}
+.cat-code{font-size:16px;font-weight:800;color:var(--gold);}
+.cat-name{font-size:12px;color:var(--t2);margin-top:2px;}
+/* ID FORMAT */
+.format-box{background:var(--s1);border:1px solid var(--b1);border-radius:10px;padding:14px;}
+.format{font-size:20px;font-weight:800;color:var(--gold);letter-spacing:.05em;margin-bottom:10px;}
+.format-parts{display:flex;flex-direction:column;gap:6px;}
+.fp{display:flex;gap:10px;font-size:13px;}
+.fp-code{color:var(--gold);font-weight:700;min-width:80px;}
+.fp-desc{color:var(--t2);}
+.example{margin-top:12px;padding-top:12px;border-top:1px solid var(--b1);}
+.ex-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:6px;}
+.ex{font-size:13px;color:var(--t2);margin-bottom:3px;}
+.ex span{color:var(--text);}
+/* FOOTER */
+.footer{margin-top:32px;font-size:11px;color:var(--t3);text-align:center;}
+</style>
+</head>
+<body>
+
+<h1>⚡ SkyKing Cable Reference</h1>
+<div class="sub">Tom Borgeson · SkyKing Broadcast Services · Vista, CA</div>
+
+<h2>Color Code — Length</h2>
+<div class="swatch-grid">
+  <div class="swatch"><div class="dot yellow"></div><div class="sw-info"><div class="sw-len">10 ft</div><div class="sw-note">Yellow tape</div></div></div>
+  <div class="swatch"><div class="dot red"></div><div class="sw-info"><div class="sw-len">25 ft</div><div class="sw-note">Red tape</div></div></div>
+  <div class="swatch"><div class="dot blue"></div><div class="sw-info"><div class="sw-len">50 ft</div><div class="sw-note">Blue tape</div></div></div>
+  <div class="swatch"><div class="dot white"></div><div class="sw-info"><div class="sw-len">75 ft</div><div class="sw-note">White tape</div></div></div>
+  <div class="swatch"><div class="dot orange"></div><div class="sw-info"><div class="sw-len">100 ft</div><div class="sw-note">Orange tape</div></div></div>
+  <div class="swatch"><div class="dot black"></div><div class="sw-info"><div class="sw-len">Custom</div><div class="sw-note">Black tape + printed label with exact length</div></div></div>
+</div>
+
+<h2>Cable Categories</h2>
+<div class="cat-grid">
+  <div class="cat"><div class="cat-code">CAM</div><div class="cat-name">Camera</div></div>
+  <div class="cat"><div class="cat-code">CBL</div><div class="cat-name">Cable (general)</div></div>
+  <div class="cat"><div class="cat-code">PWR</div><div class="cat-name">Power</div></div>
+  <div class="cat"><div class="cat-code">AUD</div><div class="cat-name">Audio</div></div>
+  <div class="cat"><div class="cat-code">NET</div><div class="cat-name">Network</div></div>
+  <div class="cat"><div class="cat-code">MON</div><div class="cat-name">Monitor</div></div>
+  <div class="cat"><div class="cat-code">CASE</div><div class="cat-name">Case</div></div>
+  <div class="cat"><div class="cat-code">MISC</div><div class="cat-name">Miscellaneous</div></div>
+</div>
+
+<h2>SkyKing ID Format</h2>
+<div class="format-box">
+  <div class="format">SK-[CAT]-[NUM]</div>
+  <div class="format-parts">
+    <div class="fp"><span class="fp-code">SK</span><span class="fp-desc">SkyKing Broadcast Services</span></div>
+    <div class="fp"><span class="fp-code">[CAT]</span><span class="fp-desc">Category code from list above</span></div>
+    <div class="fp"><span class="fp-code">[NUM]</span><span class="fp-desc">3-digit sequential number</span></div>
+  </div>
+  <div class="example">
+    <div class="ex-lbl">Examples</div>
+    <div class="ex"><span>SK-CAM-001</span> — First camera</div>
+    <div class="ex"><span>SK-PWR-001</span> — First power cable</div>
+    <div class="ex"><span>SK-AUD-025</span> — 25th audio cable</div>
+    <div class="ex"><span>SK-CASE-003</span> — Third case (Pelican BITS BOX)</div>
+  </div>
+</div>
+
+<div class="footer">tomfilms.github.io/cables.html · All cables get a printed label regardless of color</div>
+
+</body>
+</html>
