@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>SkyKing Football</title>
+<style>
+:root{
+  --bg:#080808;--s1:#101010;--s2:#181818;--s3:#222;
+  --b1:#2c2c2c;--b2:#3a3a3a;
+  --gold:#f0b429;--blue:#3b82f6;--green:#22c55e;
+  --red:#ef4444;--purple:#a78bfa;
+  --text:#f0ede8;--t2:#888;--t3:#404040;
+  --r:10px;--r2:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+html,body{height:100%;overflow:hidden;background:var(--bg);}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:15px;color:var(--text);display:flex;flex-direction:column;}
+
+/* HEADER */
+#hdr{background:var(--s1);border-bottom:2px solid var(--b1);padding:8px 14px 7px;flex-shrink:0;}
+#sb{display:flex;align-items:center;justify-content:space-between;}
+.sbt{flex:1;display:flex;flex-direction:column;align-items:center;}
+.sbn{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px;}
+.sbs{font-size:48px;font-weight:800;line-height:1;cursor:pointer;padding:0 8px;border-radius:8px;letter-spacing:-2px;min-width:70px;text-align:center;}
+.sbs:active{background:var(--s2);}
+.hc{color:var(--gold);}
+.ac{color:var(--blue);}
+.sbm{display:flex;flex-direction:column;align-items:center;gap:6px;}
+#qbtn{background:var(--s2);border:2px solid var(--b2);color:var(--text);font-size:15px;font-weight:700;padding:6px 14px;border-radius:8px;cursor:pointer;min-width:48px;text-align:center;}
+#qbtn:active{opacity:.6;}
+#setbtn{background:none;border:none;color:var(--t3);font-size:20px;cursor:pointer;padding:2px 6px;}
+
+/* MAIN SCROLL */
+#main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 12px 90px;display:flex;flex-direction:column;gap:11px;}
+
+/* SHARED */
+.lbl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--t2);margin-bottom:5px;}
+.row{display:flex;gap:8px;}.row>*{flex:1;}
+input,select{background:var(--s1);border:2px solid var(--b1);border-radius:var(--r);color:var(--text);font-size:15px;padding:10px 12px;width:100%;outline:none;-webkit-appearance:none;font-family:inherit;}
+input:focus,select:focus{border-color:var(--gold);}
+.btn{padding:13px 10px;border-radius:var(--r);border:2px solid var(--b1);background:var(--s2);color:var(--text);font-size:14px;font-weight:600;cursor:pointer;text-align:center;font-family:inherit;}
+.btn:active{opacity:.55;}
+.btn-gold{background:var(--gold);color:#000;border-color:var(--gold);}
+.btn-blue{background:var(--blue);color:#fff;border-color:var(--blue);}
+.btn-sm{padding:8px 12px;font-size:13px;}
+.btn-red{border-color:var(--red);color:var(--red);}
+.card{background:var(--s1);border:2px solid var(--b1);border-radius:var(--r2);padding:14px;display:flex;flex-direction:column;gap:10px;}
+.card-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t2);}
+
+/* POSSESSION */
+#possgrp{display:flex;border-radius:var(--r2);overflow:hidden;border:2px solid var(--b1);}
+.pbtn{flex:1;padding:16px 8px;text-align:center;font-size:17px;font-weight:800;background:var(--s1);color:var(--t2);border:none;cursor:pointer;letter-spacing:.02em;}
+.pbtn:active{opacity:.6;}
+#ph.on{background:var(--gold);color:#000;}
+#pa.on{background:var(--blue);color:#fff;}
+
+/* PLAY GRID — 3 col, bigger */
+#pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.pb{
+  padding:18px 4px;text-align:center;font-size:13px;font-weight:700;
+  background:var(--s1);color:var(--text);
+  border:2px solid var(--b1);border-left-width:4px;border-radius:var(--r);
+  cursor:pointer;line-height:1.3;
+}
+.pb:active{opacity:.55;}
+.pb.on{background:var(--s3);border-top-color:var(--gold);border-right-color:var(--gold);border-bottom-color:var(--gold);}
+.rush{border-left-color:var(--gold);}
+.pass{border-left-color:var(--blue);}
+.sc{border-left-color:var(--green);background:#0a160c;}
+.to{border-left-color:var(--red);background:#160a0a;}
+.sp{border-left-color:var(--purple);}
+.pn{border-left-color:#f97316;}
+
+/* PLAYER SLOTS */
+#slots{display:flex;gap:8px;}
+.slot{
+  flex:1;background:var(--s1);border:2px solid var(--b1);border-radius:var(--r);
+  padding:10px 12px;cursor:pointer;min-height:64px;
+  display:flex;flex-direction:column;gap:3px;
+}
+.slot.active{border-color:var(--gold);background:var(--s2);}
+.slot-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);}
+.slot-num{font-size:24px;font-weight:800;color:var(--gold);line-height:1;}
+.slot-name{font-size:12px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.slot-pos{font-size:11px;color:var(--t3);}
+.slot-empty{font-size:13px;color:var(--t3);padding-top:6px;}
+.slot-typing{font-size:26px;font-weight:800;color:var(--gold);line-height:1;}
+
+/* NUMBER PAD */
+#npad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.nk{
+  padding:18px 6px;text-align:center;font-size:26px;font-weight:700;
+  background:var(--s2);border:2px solid var(--b1);border-radius:var(--r2);
+  cursor:pointer;color:var(--text);font-family:inherit;
+}
+.nk:active{opacity:.5;}
+.nk-del{font-size:20px;color:var(--t2);}
+.nk-clr{font-size:14px;font-weight:700;color:var(--red);}
+.nk-skip{font-size:13px;font-weight:700;color:var(--t2);}
+
+/* YARDAGE */
+#ydrow{display:flex;gap:8px;align-items:stretch;}
+#yddisp{
+  flex:1;background:var(--s1);border:2px solid var(--b1);border-radius:var(--r);
+  min-height:64px;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:2px;cursor:pointer;
+}
+#yddisp.active{border-color:var(--gold);}
+.yd-val{font-size:32px;font-weight:800;color:var(--gold);letter-spacing:-1px;line-height:1;}
+.yd-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);}
+.yd-signs{display:flex;flex-direction:column;gap:6px;flex-shrink:0;}
+.yds{
+  width:52px;height:28px;border-radius:8px;border:2px solid var(--b1);
+  background:var(--s2);color:var(--text);font-size:20px;font-weight:700;
+  cursor:pointer;text-align:center;line-height:26px;font-family:inherit;
+}
+.yds:active{opacity:.5;}
+.yd-clr{
+  width:52px;background:var(--s2);border:2px solid var(--b1);border-radius:var(--r);
+  color:var(--t3);font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.yd-clr:active{color:var(--red);opacity:.7;}
+
+/* MARKERS */
+#mrow{display:flex;gap:8px;}
+.mk{
+  flex:1;padding:18px 4px;border-radius:var(--r2);border:2px solid transparent;
+  font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;
+  text-align:center;line-height:1.3;
+}
+.mk:active{opacity:.55;}
+#mkb{background:var(--green);color:#000;}
+#mkb.on{background:#091a0c;color:var(--green);border-color:var(--green);}
+#mke{background:var(--red);color:#fff;}
+#mke.on{background:#1a0909;color:var(--red);border-color:var(--red);}
+#mkt{background:var(--gold);color:#000;}
+#mkt.on{background:#1e1500;color:var(--gold);border-color:var(--gold);}
+
+/* GENERATED NOTE */
+#notebox{
+  background:var(--s1);border:2px solid var(--b1);border-radius:var(--r);
+  padding:10px 12px;min-height:44px;display:flex;align-items:center;gap:8px;
+}
+#notetext{flex:1;font-size:13px;color:var(--t2);font-style:italic;line-height:1.4;word-break:break-word;}
+#notetext.has-note{color:var(--text);font-style:normal;}
+#micbtn{
+  width:52px;height:52px;border-radius:var(--r);border:2px solid var(--b1);
+  background:var(--s2);color:var(--t2);font-size:24px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+#micbtn.on{background:#1a0909;border-color:var(--red);color:var(--red);}
+#micbtn:active{opacity:.6;}
+
+/* TIME DISPLAY */
+#timebar{
+  display:flex;gap:8px;
+  background:var(--s1);border:2px solid var(--b1);border-radius:var(--r);
+  padding:8px 12px;
+}
+.tbi{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.tbl{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);}
+.tbv{font-size:13px;color:var(--t2);font-variant-numeric:tabular-nums;}
+.tbv.set{color:var(--text);}
+
+/* LOG BUTTON */
+#logbtn{
+  background:var(--gold);color:#000;font-size:22px;font-weight:900;
+  border:none;border-radius:var(--r2);padding:20px;width:100%;
+  cursor:pointer;font-family:inherit;letter-spacing:.01em;
+}
+#logbtn:active{opacity:.65;}
+#logbtn.off{background:var(--s2);color:var(--t3);}
+
+/* FLASH */
+#flash{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:rgba(240,180,41,.96);color:#000;font-size:18px;font-weight:800;
+  padding:14px 28px;border-radius:12px;pointer-events:none;
+  opacity:0;transition:opacity .15s;z-index:999;white-space:nowrap;
+  max-width:90vw;text-align:center;
+}
+#flash.on{opacity:1;}
+
+/* MODALS */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;align-items:flex-end;}
+.modal.on{display:flex;}
+.msh{background:var(--s1);border-radius:16px 16px 0 0;padding:20px 16px 40px;width:100%;max-height:82vh;overflow-y:auto;}
+.mtt{font-size:17px;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+.mx{background:none;border:none;color:var(--t2);font-size:24px;cursor:pointer;padding:4px 8px;}
+.scgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.scb{padding:18px;border-radius:var(--r);border:2px solid var(--b1);background:var(--s2);color:var(--text);font-size:16px;font-weight:700;cursor:pointer;text-align:center;}
+.scb:active{opacity:.55;}
+.scb.minus{color:var(--red);}
+
+/* SETUP OVERLAY */
+#setuppage{
+  display:none;position:fixed;inset:0;background:var(--bg);z-index:150;
+  overflow-y:auto;padding:16px 14px 60px;flex-direction:column;gap:12px;
+}
+#setuppage.on{display:flex;}
+#setup-close{background:var(--gold);color:#000;font-size:16px;font-weight:700;border:none;border-radius:var(--r);padding:14px;width:100%;cursor:pointer;font-family:inherit;margin-bottom:4px;}
+
+/* LOG OVERLAY */
+#logpage{
+  display:none;position:fixed;inset:0;background:var(--bg);z-index:150;
+  overflow-y:auto;padding:14px 12px 80px;flex-direction:column;gap:0;
+}
+#logpage.on{display:flex;}
+#logpage-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-shrink:0;}
+#log-close{background:var(--s2);border:2px solid var(--b1);color:var(--text);font-size:14px;font-weight:600;border-radius:var(--r);padding:10px 18px;cursor:pointer;font-family:inherit;}
+#logcount{font-size:13px;color:var(--t2);}
+.lbtns{display:flex;gap:8px;}
+
+/* LOG ENTRIES */
+.le{background:var(--s1);border:2px solid var(--b1);border-left:4px solid var(--b1);border-radius:var(--r2);padding:11px 13px;display:flex;gap:9px;margin-bottom:8px;}
+.le.home{border-left-color:var(--gold);}
+.le.away{border-left-color:var(--blue);}
+.le.istd{background:#1c1400;}
+.lei{font-size:12px;color:var(--t3);min-width:24px;padding-top:2px;}
+.leb{flex:1;min-width:0;}
+.let{font-size:15px;font-weight:700;line-height:1.2;}
+.lem{font-size:12px;color:var(--t2);margin-top:3px;line-height:1.5;}
+.letc{font-size:11px;color:var(--t3);margin-top:2px;font-variant-numeric:tabular-nums;}
+.len{font-size:12px;color:var(--purple);margin-top:3px;line-height:1.4;}
+.ler{display:flex;flex-direction:column;align-items:flex-end;gap:5px;}
+.lesc{font-size:11px;color:var(--t2);text-align:right;white-space:nowrap;}
+.lescb{font-size:11px;padding:5px 9px;border-radius:5px;border:2px solid var(--b2);background:var(--s2);color:var(--t2);cursor:pointer;}
+.ledel{background:none;border:none;color:var(--t3);font-size:16px;cursor:pointer;padding:2px;}
+.ledel:active{color:var(--red);}
+
+/* BOTTOM NAV */
+#botnav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--s1);border-top:2px solid var(--b1);
+  display:flex;z-index:100;
+}
+.bnbtn{
+  flex:1;padding:12px 4px;text-align:center;font-size:11px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.07em;color:var(--t3);
+  background:none;border:none;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+}
+.bnbtn .bni{font-size:18px;}
+.bnbtn.on{color:var(--gold);}
+
+/* ROSTER */
+.rprow{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--b1);}
+.rprow:last-child{border-bottom:none;}
+.rpn{font-size:15px;font-weight:700;color:var(--gold);min-width:36px;}
+.rpnm{flex:1;font-size:14px;}
+.rpp{font-size:12px;color:var(--t2);}
+.rempty{color:var(--t3);text-align:center;padding:16px 0;font-size:14px;}
+.spin{text-align:center;padding:18px;color:var(--t2);font-size:14px;}
+.stok{color:var(--green);font-size:13px;padding:5px 0;}
+.sterr{color:var(--red);font-size:13px;padding:5px 0;line-height:1.4;}
+</style>
+</head>
+<body>
+
+<div id="flash"></div>
+
+<!-- SCORE MODAL -->
+<div class="modal" id="msc">
+  <div class="msh">
+    <div class="mtt"><span id="msc-t">Score</span><button class="mx" onclick="cm('msc')">✕</button></div>
+    <div class="scgrid">
+      <button class="scb" onclick="bumpScore(6)">+6 &nbsp;TD</button>
+      <button class="scb" onclick="bumpScore(3)">+3 &nbsp;FG</button>
+      <button class="scb" onclick="bumpScore(2)">+2 &nbsp;Saf/2PT</button>
+      <button class="scb" onclick="bumpScore(1)">+1 &nbsp;XP</button>
+      <button class="scb minus" onclick="bumpScore(-1)">−1</button>
+      <button class="scb minus" onclick="bumpScore(-3)">−3</button>
+    </div>
+  </div>
+</div>
+
+<!-- PLAY SCORE MODAL -->
+<div class="modal" id="mpsc">
+  <div class="msh">
+    <div class="mtt">Score at Play <button class="mx" onclick="cm('mpsc')">✕</button></div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="lbl" id="psch">Home</div>
+      <input type="number" id="psc-h" inputmode="numeric" placeholder="0">
+      <div class="lbl" id="psca">Away</div>
+      <input type="number" id="psc-a" inputmode="numeric" placeholder="0">
+      <button class="btn btn-gold" onclick="savePlayScore()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div id="hdr">
+  <div id="sb">
+    <div class="sbt">
+      <div class="sbn hc" id="hname">HOME</div>
+      <div class="sbs hc" id="hscore" onclick="openScoreModal('home')">0</div>
+    </div>
+    <div class="sbm">
+      <button id="qbtn" onclick="bumpQtr()">Q1</button>
+    </div>
+    <div class="sbt">
+      <div class="sbn ac" id="aname">AWAY</div>
+      <div class="sbs ac" id="ascore" onclick="openScoreModal('away')">0</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN LOGGER -->
+<div id="main">
+
+  <!-- Possession -->
+  <div>
+    <div class="lbl">Possession</div>
+    <div id="possgrp">
+      <button class="pbtn on" id="ph" onclick="setPoss('home')"><span id="phl">HOME</span></button>
+      <button class="pbtn" id="pa" onclick="setPoss('away')"><span id="pal">AWAY</span></button>
+    </div>
+  </div>
+
+  <!-- Play Type -->
+  <div>
+    <div class="lbl">Play</div>
+    <div id="pgrid">
+      <button class="pb rush" onclick="sp(this,'Rush')">Rush</button>
+      <button class="pb pass" onclick="sp(this,'Pass ✓')">Pass ✓</button>
+      <button class="pb pass" onclick="sp(this,'Incomp.')">Incomp.</button>
+      <button class="pb sc" onclick="sp(this,'Touchdown')">TD 🏈</button>
+      <button class="pb sc" onclick="sp(this,'Field Goal')">FG ✓</button>
+      <button class="pb sc" onclick="sp(this,'FG Miss')">FG ✗</button>
+      <button class="pb sc" onclick="sp(this,'XP/2PT')">XP/2PT</button>
+      <button class="pb to" onclick="sp(this,'INT')">INT</button>
+      <button class="pb to" onclick="sp(this,'Fumble')">Fumble</button>
+      <button class="pb sp" onclick="sp(this,'Punt')">Punt</button>
+      <button class="pb sp" onclick="sp(this,'Kickoff')">Kickoff</button>
+      <button class="pb pn" onclick="sp(this,'Penalty')">Penalty</button>
+    </div>
+  </div>
+
+  <!-- Player + Number Pad -->
+  <div>
+    <div class="lbl">Skill Player <span id="pad-mode-lbl" style="color:var(--t3);font-weight:400;font-size:10px;">— dial jersey #, or skip</span></div>
+    <div id="slots" style="margin-bottom:8px;">
+      <div class="slot active" id="slot-sk" onclick="activateSlot('sk')">
+        <div class="slot-lbl">Skill Player</div>
+        <div id="sk-disp"><div class="slot-empty">dial # below</div></div>
+      </div>
+      <div class="slot" id="slot-yd" onclick="activateSlot('yd')">
+        <div class="slot-lbl">Yards</div>
+        <div id="yd-disp">
+          <div class="yd-val" id="ydval">—</div>
+        </div>
+      </div>
+    </div>
+    <!-- numpad -->
+    <div id="npad">
+      <button class="nk" onclick="nk(1)">1</button>
+      <button class="nk" onclick="nk(2)">2</button>
+      <button class="nk" onclick="nk(3)">3</button>
+      <button class="nk" onclick="nk(4)">4</button>
+      <button class="nk" onclick="nk(5)">5</button>
+      <button class="nk" onclick="nk(6)">6</button>
+      <button class="nk" onclick="nk(7)">7</button>
+      <button class="nk" onclick="nk(8)">8</button>
+      <button class="nk" onclick="nk(9)">9</button>
+      <button class="nk nk-clr" onclick="nkClr()">CLR</button>
+      <button class="nk" onclick="nk(0)">0</button>
+      <button class="nk nk-del" onclick="nkDel()">⌫</button>
+    </div>
+    <!-- sign buttons only show in yd mode -->
+    <div id="ydsigns" style="display:none;margin-top:8px;">
+      <div class="row">
+        <button class="btn" id="ydplus" onclick="setSign(1)">+ Gain</button>
+        <button class="btn" id="ydminus" onclick="setSign(-1)">− Loss</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clip Markers -->
+  <div>
+    <div class="lbl">Clip Markers</div>
+    <div id="mrow">
+      <button class="mk" id="mkb" onclick="markBegin()">▶<br>BEGIN</button>
+      <button class="mk" id="mke" onclick="markEnd()">■<br>END</button>
+      <button class="mk" id="mkt" onclick="markTD()">🏈<br>TD</button>
+    </div>
+    <div id="timebar" style="margin-top:8px;">
+      <div class="tbi"><div class="tbl">BEGIN</div><div class="tbv" id="tcb">——</div></div>
+      <div class="tbi"><div class="tbl">END</div><div class="tbv" id="tce">——</div></div>
+      <div class="tbi"><div class="tbl">TD</div><div class="tbv" id="tctd">——</div></div>
+      <div class="tbi"><div class="tbl">Now</div><div class="tbv" id="tclive">——</div></div>
+    </div>
+  </div>
+
+  <!-- Auto Note + Mic -->
+  <div>
+    <div class="lbl">Play Note</div>
+    <div id="notebox">
+      <div id="notetext">select play type to generate note…</div>
+      <button id="micbtn" onclick="toggleMic()">🎤</button>
+    </div>
+  </div>
+
+  <!-- LOG -->
+  <button id="logbtn" class="off" onclick="logPlay()">Tap a play type</button>
+
+</div><!-- /main -->
+
+<!-- LOG OVERLAY -->
+<div id="logpage">
+  <div id="logpage-header">
+    <span id="logcount">0 plays</span>
+    <div class="lbtns">
+      <button class="btn btn-sm" onclick="undoLast()">↩ Undo</button>
+      <button class="btn btn-sm btn-red" onclick="clearAll()">✕ Clear</button>
+      <button class="btn btn-sm btn-blue" onclick="exportCSV()">⬇ CSV</button>
+    </div>
+    <button id="log-close" onclick="showPage('logger')">✕ Close</button>
+  </div>
+  <div id="loglist"></div>
+</div>
+
+<!-- SETUP OVERLAY -->
+<div id="setuppage">
+  <button id="setup-close" onclick="showPage('logger')">← Back to Logger</button>
+
+  <div class="card">
+    <div class="card-title">Game</div>
+    <div class="row">
+      <div><div class="lbl">Date</div><input type="date" id="sdate"></div>
+      <div><div class="lbl">Quarter</div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn" id="sq1" onclick="setQtr(1)" style="padding:10px 6px;">Q1</button>
+          <button class="btn" id="sq2" onclick="setQtr(2)" style="padding:10px 6px;">Q2</button>
+          <button class="btn" id="sq3" onclick="setQtr(3)" style="padding:10px 6px;">Q3</button>
+          <button class="btn" id="sq4" onclick="setQtr(4)" style="padding:10px 6px;">Q4</button>
+          <button class="btn" id="sq5" onclick="setQtr(5)" style="padding:10px 6px;">OT</button>
+        </div>
+      </div>
+    </div>
+    <div><div class="lbl">Location</div><input type="text" id="sloc" placeholder="Stadium / City"></div>
+    <button class="btn btn-gold" onclick="saveGame()">Save Game Info</button>
+  </div>
+
+  <!-- QB Assignment -->
+  <div class="card">
+    <div class="card-title">Quarterback Assignment</div>
+    <div class="row">
+      <div>
+        <div class="lbl">Home QB #</div>
+        <input type="number" id="hqbn" inputmode="numeric" placeholder="e.g. 12">
+      </div>
+      <div>
+        <div class="lbl">Away QB #</div>
+        <input type="number" id="aqbn" inputmode="numeric" placeholder="e.g. 7">
+      </div>
+    </div>
+    <button class="btn btn-gold" onclick="assignQBs()">Assign QBs</button>
+    <div id="qb-status" style="font-size:12px;color:var(--t2);"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🏠 Home Team</div>
+    <div class="row">
+      <div><div class="lbl">School</div><input type="text" id="shs" placeholder="Lincoln High"></div>
+      <div><div class="lbl">Mascot</div><input type="text" id="shm" placeholder="Eagles"></div>
+    </div>
+    <div><div class="lbl">Roster URL (MaxPreps, school site…)</div><input type="url" id="shu" placeholder="https://…" inputmode="url"></div>
+    <div class="row">
+      <button class="btn btn-blue" onclick="scrapeRoster('home')">🔍 Scrape Roster</button>
+      <button class="btn" onclick="saveTeam('home')">Save</button>
+    </div>
+    <div id="hst"></div><div id="hrl"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">✈️ Away Team</div>
+    <div class="row">
+      <div><div class="lbl">School</div><input type="text" id="sas" placeholder="Washington High"></div>
+      <div><div class="lbl">Mascot</div><input type="text" id="sam" placeholder="Bears"></div>
+    </div>
+    <div><div class="lbl">Roster URL</div><input type="url" id="sau" placeholder="https://…" inputmode="url"></div>
+    <div class="row">
+      <button class="btn btn-blue" onclick="scrapeRoster('away')">🔍 Scrape Roster</button>
+      <button class="btn" onclick="saveTeam('away')">Save</button>
+    </div>
+    <div id="ast"></div><div id="arl"></div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div id="botnav">
+  <button class="bnbtn on" id="bn-logger" onclick="showPage('logger')"><span class="bni">📋</span>Logger</button>
+  <button class="bnbtn" id="bn-log" onclick="showPage('log')"><span class="bni">📝</span>Log <span id="lbadge"></span></button>
+  <button class="bnbtn" id="bn-setup" onclick="showPage('setup')"><span class="bni">⚙</span>Setup</button>
+</div>
+
+<script>
+// ════════════════════════════════
+//  STATE
+// ════════════════════════════════
+const G={
+  date:'', loc:'',
+  home:{school:'HOME', mascot:'', url:'', roster:[], qb:null},
+  away:{school:'AWAY', mascot:'', url:'', roster:[], qb:null},
+  score:{home:0, away:0},
+  quarter:1, possession:'home',
+  plays:[]
+};
+let T={play:null, skill:null, begin:null, end:null, tdMark:null, yards:null, ydSign:1, extraNote:''};
+let pad={slot:'sk', buf:''};
+let _scTeam=null, _editIdx=null, _ftmr=null, _clockTmr=null;
+let recog=null, listening=false;
+const PASS_PLAYS=['Pass ✓','Incomp.','Touchdown','INT'];
+
+// ════════════════════════════════
+//  STORAGE
+// ════════════════════════════════
+const SK='sk_fb5';
+function save(){try{localStorage.setItem(SK,JSON.stringify(G));}catch(e){}}
+function load(){try{const d=localStorage.getItem(SK);if(d)Object.assign(G,JSON.parse(d));}catch(e){}}
+
+// ════════════════════════════════
+//  INIT
+// ════════════════════════════════
+function init(){
+  load();
+  if(!G.date)G.date=new Date().toISOString().slice(0,10);
+  renderAll();
+  populateSetup();
+  initVoice();
+  // Live clock
+  _clockTmr=setInterval(()=>{
+    const el=document.getElementById('tclive');
+    if(el)el.textContent=wall();
+  },1000);
+}
+
+// ════════════════════════════════
+//  PAGES
+// ════════════════════════════════
+function showPage(p){
+  document.getElementById('logpage').classList.toggle('on', p==='log');
+  document.getElementById('setuppage').classList.toggle('on', p==='setup');
+  ['logger','log','setup'].forEach(n=>{
+    const b=document.getElementById('bn-'+n);
+    if(b) b.classList.toggle('on', n===p);
+  });
+  if(p==='log') renderLog();
+}
+
+// ════════════════════════════════
+//  RENDER
+// ════════════════════════════════
+function $(i){return document.getElementById(i);}
+
+function renderAll(){
+  $('hname').textContent=G.home.school;
+  $('aname').textContent=G.away.school;
+  $('hscore').textContent=G.score.home;
+  $('ascore').textContent=G.score.away;
+  $('qbtn').textContent=G.quarter>=5?'OT':`Q${G.quarter}`;
+  $('phl').textContent=G.home.school;
+  $('pal').textContent=G.away.school;
+  $('ph').className='pbtn'+(G.possession==='home'?' on':'');
+  $('pa').className='pbtn'+(G.possession==='away'?' on':'');
+  $('lbadge').textContent=G.plays.length?` (${G.plays.length})`:'';
+  renderPad();
+  renderNote();
+}
+
+function renderPad(){
+  // Skill slot
+  const sks=$('slot-sk'), skd=$('sk-disp');
+  sks.className='slot'+(pad.slot==='sk'?' active':'');
+  if(pad.slot==='sk' && pad.buf){
+    skd.innerHTML=`<div class="slot-typing">#${pad.buf}</div>`;
+  } else if(T.skill){
+    skd.innerHTML=`<div class="slot-num">#${T.skill.num}</div><div class="slot-name">${T.skill.name}</div><div class="slot-pos">${T.skill.pos||''}</div>`;
+  } else {
+    skd.innerHTML=`<div class="slot-empty">dial # below</div>`;
+  }
+  // Yard slot
+  const yds=$('slot-yd');
+  yds.className='slot'+(pad.slot==='yd'?' active':'');
+  const yv=$('ydval');
+  if(pad.slot==='yd' && pad.buf){
+    yv.textContent=(T.ydSign>0?'+':'-')+pad.buf;
+    yv.style.color='var(--gold)';
+  } else if(T.yards!==null){
+    yv.textContent=(T.yards>0?'+':'')+T.yards;
+    yv.style.color='var(--gold)';
+  } else {
+    yv.textContent='—';
+    yv.style.color='var(--t3)';
+  }
+  // Show/hide sign buttons
+  $('ydsigns').style.display=pad.slot==='yd'?'block':'none';
+  // Update sign button styles
+  $('ydplus').style.background=T.ydSign===1?'var(--green)':'var(--s2)';
+  $('ydplus').style.color=T.ydSign===1?'#000':'var(--text)';
+  $('ydminus').style.background=T.ydSign===-1?'var(--red)':'var(--s2)';
+  $('ydminus').style.color=T.ydSign===-1?'#fff':'var(--text)';
+}
+
+function renderNote(){
+  const el=$('notetext');
+  const note=buildNote();
+  if(note){el.textContent=note;el.className='has-note';}
+  else{el.textContent='select play type to generate note…';el.className='';}
+}
+
+function playerStr(p, role){
+  if(!p) return '';
+  // In the announcer note: full name + phonetic if present
+  const ph=p.phon?` (${p.phon})`:'';
+  const prefix=role==='qb'?`QB #${p.num} `:`#${p.num} `;
+  return prefix+p.name+ph;
+}
+
+function buildNote(){
+  if(!T.play) return '';
+  const qb=G[G.possession].qb;
+  const sk=T.skill;
+  const team=G.possession==='home'?G.home.school:G.away.school;
+  const ydStr=T.yards!==null?(T.yards>0?` +${T.yards}`:(T.yards<0?` ${T.yards}`:' 0'))+' yds':'';
+  const isPass=PASS_PLAYS.includes(T.play);
+  let note=`Q${G.quarter} ${team} — ${T.play}`;
+  if(isPass && qb) note+=` — ${playerStr(qb,'qb')}`;
+  if(sk) note+=(isPass?' to ':' — ')+playerStr(sk,'sk');
+  if(ydStr) note+=ydStr;
+  if(T.tdMark || T.play==='Touchdown') note+=' — TOUCHDOWN';
+  if(T.extraNote) note+=' — '+T.extraNote;
+  return note;
+}
+
+function renderLog(){
+  const list=$('loglist'), lbl=$('logcount');
+  lbl.textContent=`${G.plays.length} play${G.plays.length!==1?'s':''}`;
+  if(!G.plays.length){list.innerHTML='<div style="color:var(--t3);text-align:center;padding:32px 0;font-size:14px;">No plays logged yet</div>';return;}
+  list.innerHTML='';
+  [...G.plays].reverse().forEach((p,ri)=>{
+    const i=G.plays.length-1-ri;
+    const td=p.tdMark||p.play==='Touchdown';
+    const div=document.createElement('div');
+    div.className=`le ${p.possession}${td?' istd':''}`;
+    const sc=p.scoreSnap?`${G.home.school} ${p.scoreSnap.home}–${G.away.school} ${p.scoreSnap.away}`:'';
+    div.innerHTML=`
+      <div class="lei">${i+1}</div>
+      <div class="leb">
+        <div class="let">${p.play}${td&&p.play!=='Touchdown'?' 🏈':''}</div>
+        <div class="lem">Q${p.quarter} · ${p.possession==='home'?G.home.school:G.away.school} · ${p.wallClock}</div>
+        ${p.begin?`<div class="letc">▶ ${p.begin} &nbsp; ${p.end?'■ '+p.end:''} ${p.tdMark?'&nbsp; 🏈 '+p.tdMark:''}</div>`:''}
+        ${p.note?`<div class="len">${p.note}</div>`:''}
+      </div>
+      <div class="ler">
+        ${sc?`<div class="lesc">${sc}</div>`:''}
+        <button class="lescb" onclick="openPlayScore(${i})">score</button>
+        <button class="ledel" onclick="delPlay(${i})">✕</button>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+// ════════════════════════════════
+//  GAME
+// ════════════════════════════════
+function setPoss(t){
+  G.possession=t; pad.buf=''; pad.slot='sk';
+  T.skill=null;
+  renderAll(); save();
+}
+function bumpQtr(){G.quarter=G.quarter>=5?1:G.quarter+1;renderAll();save();}
+function setQtr(q){
+  G.quarter=q;
+  [1,2,3,4,5].forEach(n=>{$(`sq${n}`).className='btn'+(G.quarter===n?' btn-gold':'');});
+  $('qbtn').textContent=G.quarter>=5?'OT':`Q${G.quarter}`;
+  save();
+}
+
+// ════════════════════════════════
+//  SCORE
+// ════════════════════════════════
+function openScoreModal(team){_scTeam=team;$('msc-t').textContent=`Score — ${team==='home'?G.home.school:G.away.school}`;om('msc');}
+function bumpScore(n){
+  if(_scTeam==='home')G.score.home=Math.max(0,G.score.home+n);
+  else G.score.away=Math.max(0,G.score.away+n);
+  cm('msc');renderAll();save();
+}
+function openPlayScore(i){
+  _editIdx=i;
+  $('psch').textContent=G.home.school; $('psca').textContent=G.away.school;
+  const s=G.plays[i].scoreSnap;
+  $('psc-h').value=s?s.home:G.score.home;
+  $('psc-a').value=s?s.away:G.score.away;
+  om('mpsc');
+}
+function savePlayScore(){
+  if(_editIdx===null)return;
+  G.plays[_editIdx].scoreSnap={home:parseInt($('psc-h').value)||0,away:parseInt($('psc-a').value)||0};
+  cm('mpsc');renderLog();save();
+}
+
+// ════════════════════════════════
+//  PLAY TYPE
+// ════════════════════════════════
+function sp(btn,type){
+  T.play=type;
+  document.querySelectorAll('.pb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  $('logbtn').textContent=`LOG — ${type}`;
+  $('logbtn').className='';
+  renderNote();
+}
+
+// ════════════════════════════════
+//  NUMBER PAD
+// ════════════════════════════════
+function activateSlot(s){
+  pad.slot=s; pad.buf='';
+  renderPad();
+}
+
+function nk(n){
+  if(pad.slot==='sk'){
+    if(pad.buf.length>=2) return;
+    pad.buf+=String(n);
+    renderPad();
+    tryResolve();
+  } else if(pad.slot==='yd'){
+    if(pad.buf.length>=3) return;
+    pad.buf+=String(n);
+    T.yards=parseInt(pad.buf)*T.ydSign;
+    renderPad(); renderNote();
+  }
+}
+
+function nkDel(){
+  pad.buf=pad.buf.slice(0,-1);
+  if(pad.slot==='yd'){
+    T.yards=pad.buf?parseInt(pad.buf)*T.ydSign:null;
+    renderNote();
+  }
+  renderPad();
+}
+
+function nkClr(){
+  pad.buf='';
+  if(pad.slot==='sk'){T.skill=null;}
+  else if(pad.slot==='yd'){T.yards=null;}
+  renderPad(); renderNote();
+}
+
+function tryResolve(){
+  const roster=G[G.possession].roster;
+  const exact=roster.find(p=>String(p.num)===pad.buf);
+  if(exact){commitSkill(exact);return;}
+  if(pad.buf.length>=2){
+    // Not in roster — store number only
+    commitSkill({num:pad.buf, name:'#'+pad.buf, pos:''});
+  }
+}
+
+function commitSkill(player){
+  T.skill={...player};
+  flash(`#${player.num} ${player.name}`);
+  pad.buf='';
+  // Auto-switch to yard slot for fast entry
+  pad.slot='yd';
+  renderPad(); renderNote();
+}
+
+function setSign(s){
+  T.ydSign=s;
+  if(T.yards!==null) T.yards=Math.abs(T.yards)*s;
+  if(pad.buf) T.yards=parseInt(pad.buf)*s;
+  renderPad(); renderNote();
+}
+
+// ════════════════════════════════
+//  MARKERS
+// ════════════════════════════════
+function wall(){return new Date().toLocaleTimeString('en-US',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+
+function markBegin(){
+  T.begin=wall(); T.end=null;
+  $('mkb').className='mk on'; $('mkb').innerHTML='✓<br>BEGIN';
+  $('mke').className='mk'; $('mke').innerHTML='■<br>END';
+  $('tcb').textContent=T.begin; $('tcb').className='tbv set';
+  $('tce').textContent='——'; $('tce').className='tbv';
+  flash('▶ '+T.begin);
+}
+function markEnd(){
+  if(!T.begin){flash('Mark BEGIN first');return;}
+  T.end=wall();
+  $('mke').className='mk on'; $('mke').innerHTML='✓<br>END';
+  $('tce').textContent=T.end; $('tce').className='tbv set';
+  flash('■ '+T.end);
+}
+function markTD(){
+  T.tdMark=wall();
+  $('mkt').className='mk on'; $('mkt').innerHTML='✓<br>TD';
+  $('tctd').textContent=T.tdMark; $('tctd').className='tbv set';
+  flash('🏈 TD');
+  renderNote();
+}
+
+// ════════════════════════════════
+//  VOICE
+// ════════════════════════════════
+function initVoice(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){$('micbtn').title='Voice not supported';return;}
+  recog=new SR();
+  recog.continuous=false; recog.interimResults=true; recog.lang='en-US';
+  recog.onresult=e=>{
+    let txt='';
+    for(let i=e.resultIndex;i<e.results.length;i++) txt+=e.results[i][0].transcript;
+    T.extraNote=txt.trim(); renderNote();
+  };
+  recog.onend=()=>{listening=false;$('micbtn').className='';$('micbtn').textContent='🎤';};
+  recog.onerror=()=>{listening=false;$('micbtn').className='';$('micbtn').textContent='🎤';};
+}
+function toggleMic(){
+  if(!recog){flash('Voice not supported on this browser');return;}
+  if(listening){recog.stop();return;}
+  listening=true;
+  $('micbtn').className='on'; $('micbtn').textContent='⏹';
+  recog.start();
+}
+
+// ════════════════════════════════
+//  LOG PLAY
+// ════════════════════════════════
+function logPlay(){
+  if(!T.play){flash('Tap a play type');return;}
+  const p={
+    play:T.play, possession:G.possession, quarter:G.quarter,
+    qb:G[G.possession].qb?{...G[G.possession].qb}:null,
+    skill:T.skill?{...T.skill}:null,
+    yards:T.yards,
+    begin:T.begin||null, end:T.end||null, tdMark:T.tdMark||null,
+    wallClock:wall(),
+    note:buildNote(),
+    scoreSnap:null,
+  };
+  G.plays.push(p);
+  // Auto-flip possession + snap score
+  const flip=['Touchdown','Field Goal','INT','Fumble','Punt','Kickoff'];
+  if(flip.includes(T.play)){
+    G.plays[G.plays.length-1].scoreSnap={...G.score};
+    G.possession=G.possession==='home'?'away':'home';
+  }
+  flash('✓ '+T.play);
+  resetPlay();
+  save(); renderAll();
+}
+
+function resetPlay(){
+  T={play:null,skill:null,begin:null,end:null,tdMark:null,yards:null,ydSign:1,extraNote:''};
+  pad={slot:'sk',buf:''};
+  $('logbtn').textContent='Tap a play type'; $('logbtn').className='off';
+  document.querySelectorAll('.pb').forEach(b=>b.classList.remove('on'));
+  ['mkb','mke','mkt'].forEach(id=>{
+    const el=$(id); el.className='mk';
+  });
+  $('mkb').innerHTML='▶<br>BEGIN'; $('mke').innerHTML='■<br>END'; $('mkt').innerHTML='🏈<br>TD';
+  ['tcb','tce','tctd'].forEach(id=>{$(id).textContent='——';$(id).className='tbv';});
+  renderPad(); renderNote();
+}
+
+// ════════════════════════════════
+//  LOG MGMT
+// ════════════════════════════════
+function undoLast(){if(!G.plays.length)return;G.plays.pop();flash('Undone');save();renderLog();$('lbadge').textContent=G.plays.length?` (${G.plays.length})`:'';} 
+function delPlay(i){G.plays.splice(i,1);save();renderLog();$('lbadge').textContent=G.plays.length?` (${G.plays.length})`:'';}
+function clearAll(){
+  if(!confirm('Clear all plays and reset scores?'))return;
+  G.plays=[];G.score={home:0,away:0};G.quarter=1;G.possession='home';
+  resetPlay();save();renderAll();showPage('logger');
+}
+
+// ════════════════════════════════
+//  SETUP
+// ════════════════════════════════
+function saveGame(){G.date=$('sdate').value;G.loc=$('sloc').value.trim();flash('Saved');save();renderAll();}
+
+function assignQBs(){
+  const hn=$('hqbn').value.trim();
+  const an=$('aqbn').value.trim();
+  const hRoster=G.home.roster, aRoster=G.away.roster;
+  let status=[];
+  if(hn){
+    const p=hRoster.find(r=>String(r.num)===hn)||{num:hn,name:'#'+hn,pos:'QB'};
+    G.home.qb={...p};
+    status.push(`Home QB: #${p.num} ${p.name}`);
+  }
+  if(an){
+    const p=aRoster.find(r=>String(r.num)===an)||{num:an,name:'#'+an,pos:'QB'};
+    G.away.qb={...p};
+    status.push(`Away QB: #${p.num} ${p.name}`);
+  }
+  $('qb-status').textContent=status.join('  |  ')||'Enter a number above';
+  flash('QBs assigned'); save(); renderAll();
+}
+
+function saveTeam(t){
+  const p=t==='home'?'h':'a';
+  G[t].school=$(`s${p}s`).value.trim()||(t==='home'?'HOME':'AWAY');
+  G[t].mascot=$(`s${p}m`).value.trim();
+  G[t].url=$(`s${p}u`).value.trim();
+  flash(`${G[t].school} saved`);save();renderAll();
+}
+
+function populateSetup(){
+  $('sdate').value=G.date; $('sloc').value=G.loc;
+  $('shs').value=G.home.school==='HOME'?'':G.home.school;
+  $('shm').value=G.home.mascot; $('shu').value=G.home.url;
+  $('sas').value=G.away.school==='AWAY'?'':G.away.school;
+  $('sam').value=G.away.mascot; $('sau').value=G.away.url;
+  $('hqbn').value=G.home.qb?.num||'';
+  $('aqbn').value=G.away.qb?.num||'';
+  if(G.home.qb||G.away.qb){
+    const parts=[];
+    if(G.home.qb)parts.push(`Home QB: #${G.home.qb.num} ${G.home.qb.name}`);
+    if(G.away.qb)parts.push(`Away QB: #${G.away.qb.num} ${G.away.qb.name}`);
+    $('qb-status').textContent=parts.join('  |  ');
+  }
+  [1,2,3,4,5].forEach(n=>{$(`sq${n}`).className='btn'+(G.quarter===n?' btn-gold':'');});
+  renderRoster('home'); renderRoster('away');
+}
+
+function renderRoster(team){
+  const r=G[team].roster, el=$(team[0]+'rl');
+  if(!r.length){el.innerHTML='<div class="rempty">No roster loaded</div>';return;}
+  el.innerHTML=r.slice(0,80).map(p=>`
+    <div class="rprow">
+      <div class="rpn">${p.num}</div>
+      <div style="flex:1;min-width:0;">
+        <div class="rpnm">${p.name}</div>
+        ${p.phon?`<div style="font-size:11px;color:var(--gold);font-style:italic;">${p.phon}</div>`:''}
+      </div>
+      <div class="rpp">${p.pos||''}</div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════
+//  ROSTER SCRAPE
+// ════════════════════════════════
+async function scrapeRoster(team){
+  const p=team==='home'?'h':'a';
+  const url=$(`s${p}u`).value.trim();
+  if(!url){flash('Enter a URL first');return;}
+  const st=$(team[0]+'st');
+  st.innerHTML='<div class="spin">🔍 Fetching page…</div>';
+  try{
+    const fr=await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+    const data=await fr.json();
+    const html=data.contents||'';
+    if(!html)throw new Error('Could not fetch page');
+    const tmp=document.createElement('div'); tmp.innerHTML=html;
+    const text=tmp.innerText.slice(0,8000);
+    st.innerHTML='<div class="spin">🤖 Parsing roster…</div>';
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6', max_tokens:1000,
+        system:'Extract a football roster. Return ONLY a JSON array: [{"num":"jersey","name":"full name","pos":"position or empty"}]. No markdown, no extra text.',
+        messages:[{role:'user',content:`Extract roster:\n\n${text}`}]
+      })
+    });
+    const rd=await res.json();
+    const raw=rd.content?.[0]?.text||'[]';
+    let roster;
+    try{roster=JSON.parse(raw.replace(/```json|```/g,'').trim());}
+    catch(e){throw new Error('Could not parse roster response');}
+    if(!Array.isArray(roster)||!roster.length)throw new Error('No players found on page');
+    G[team].roster=roster;
+    st.innerHTML=`<div class="stok">✓ ${roster.length} players loaded — generating pronunciations…</div>`;
+
+    // Generate phonetics via Claude for names that may be hard to pronounce
+    try{
+      const nameList=roster.map(p=>`${p.num} ${p.name}`).join('\n');
+      const phRes=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          model:'claude-sonnet-4-6', max_tokens:1500,
+          system:'You are a broadcast phonetics expert. Given a list of athlete names with jersey numbers, return ONLY a JSON array of objects with keys "num" (jersey number as string) and "phon" (phonetic pronunciation string using capital syllables and hyphens, e.g. "tih-BOH-doh"). ONLY include players whose names are non-obvious or potentially mispronounced — skip common Anglo-American names like Smith, Johnson, Williams, Brown, Davis, Jones, Wilson, Taylor, Anderson, Thomas, Jackson, White, Harris, Martin, Thompson, Garcia, Martinez, Robinson. If ALL names are common, return an empty array []. No markdown, no extra text.',
+          messages:[{role:'user',content:`Generate phonetics for difficult names only:\n\n${nameList}`}]
+        })
+      });
+      const phData=await phRes.json();
+      const phRaw=phData.content?.[0]?.text||'[]';
+      let phonetics;
+      try{phonetics=JSON.parse(phRaw.replace(/```json|```/g,'').trim());}
+      catch(e){phonetics=[];}
+      // Merge phonetics into roster
+      if(Array.isArray(phonetics)){
+        phonetics.forEach(ph=>{
+          const player=G[team].roster.find(r=>String(r.num)===String(ph.num));
+          if(player && ph.phon) player.phon=ph.phon;
+        });
+      }
+      const phCount=G[team].roster.filter(p=>p.phon).length;
+      st.innerHTML=`<div class="stok">✓ ${roster.length} players — ${phCount} pronunciation${phCount!==1?'s':''} generated</div>`;
+    }catch(phErr){
+      st.innerHTML=`<div class="stok">✓ ${roster.length} players loaded (phonetics unavailable)</div>`;
+    }
+
+    // Re-resolve QB if number already set
+    const qbNum=G[team].qb?.num;
+    if(qbNum){
+      const found=G[team].roster.find(r=>String(r.num)===String(qbNum));
+      if(found) G[team].qb={...found};
+    }
+    renderRoster(team); save();
+  }catch(err){
+    st.innerHTML=`<div class="sterr">✗ ${err.message}<br><small>Try a direct MaxPreps roster URL.</small></div>`;
+  }
+}
+
+// ════════════════════════════════
+//  CSV EXPORT
+// ════════════════════════════════
+function exportCSV(){
+  if(!G.plays.length){flash('No plays to export');return;}
+  const lines=[
+    `# SkyKing Football Logger`,
+    `# ${G.home.school}${G.home.mascot?' ('+G.home.mascot+')':''} vs ${G.away.school}${G.away.mascot?' ('+G.away.mascot+')':''}`,
+    `# ${G.date}${G.loc?' | '+G.loc:''}`,
+    `# Final: ${G.home.school} ${G.score.home} – ${G.away.school} ${G.score.away}`,
+    '',
+    '#,Wall Clock,Quarter,Play,Possession,Yards,QB #,QB Name,Skill #,Skill Name,BEGIN,END,TD,Score Home,Score Away,Note'
+  ];
+  G.plays.forEach((p,i)=>lines.push([
+    i+1, p.wallClock, p.quarter, p.play,
+    p.possession==='home'?G.home.school:G.away.school,
+    p.yards!=null?p.yards:'',
+    p.qb?.num||'', p.qb?.name||'',
+    p.skill?.num||'', p.skill?.name||'',
+    p.begin||'', p.end||'', p.tdMark||'',
+    p.scoreSnap?.home??'', p.scoreSnap?.away??'',
+    `"${(p.note||'').replace(/"/g,'""')}"`
+  ].join(',')));
+  dl(lines.join('\n'),
+    `skyking_${G.home.school}_vs_${G.away.school}_${G.date}.csv`.replace(/\s+/g,'_'),
+    'text/csv');
+  flash('CSV downloaded');
+}
+
+// ════════════════════════════════
+//  UTILS
+// ════════════════════════════════
+function om(id){$(id).classList.add('on');}
+function cm(id){$(id).classList.remove('on');}
+function flash(msg){
+  const el=$('flash'); el.textContent=msg; el.classList.add('on');
+  clearTimeout(_ftmr); _ftmr=setTimeout(()=>el.classList.remove('on'),1200);
+}
+function dl(c,n,t){
+  const b=new Blob([c],{type:t}), u=URL.createObjectURL(b), a=document.createElement('a');
+  a.href=u; a.download=n; a.click(); URL.revokeObjectURL(u);
+}
+
+document.querySelectorAll('.modal').forEach(el=>
+  el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('on');})
+);
+
+init();
+</script>
+</body>
+</html>
