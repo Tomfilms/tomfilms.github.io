@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Highlight Producer</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:Arial,sans-serif;background:#0a0a0a;color:#fff;min-height:100vh;overflow-x:hidden;}
+.header{background:#111;padding:12px 15px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #e94560;position:sticky;top:0;z-index:100;}
+.header h1{font-size:18px;color:#e94560;letter-spacing:1px;}
+.header .live-clock{font-size:13px;color:#ffd700;font-weight:bold;}
+.screen{display:none;min-height:100vh;padding-bottom:80px;}
+.screen.active{display:block;}
+.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;padding:20px;}
+.home-btn{background:#16213e;border:none;border-radius:15px;padding:30px 15px;color:#fff;font-size:16px;font-weight:bold;cursor:pointer;text-align:center;border:1px solid #0f3460;}
+.home-btn .icon{font-size:36px;display:block;margin-bottom:10px;}
+.home-btn:active{transform:scale(0.95);background:#e94560;}
+.home-btn.primary{background:#e94560;border-color:#e94560;}
+.home-btn.wide{grid-column:1/-1;}
+.form-screen{padding:20px;}
+.form-group{margin-bottom:15px;}
+.form-group label{display:block;font-size:12px;color:#aaa;margin-bottom:6px;text-transform:uppercase;}
+.form-group input,.form-group select{width:100%;padding:14px;background:#16213e;border:1px solid #0f3460;border-radius:10px;color:#fff;font-size:16px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-primary{width:100%;padding:18px;background:#e94560;border:none;border-radius:12px;color:#fff;font-size:18px;font-weight:bold;cursor:pointer;margin-top:10px;}
+.btn-secondary{width:100%;padding:14px;background:#16213e;border:1px solid #0f3460;border-radius:12px;color:#aaa;font-size:16px;cursor:pointer;margin-top:8px;}
+.roster-screen{padding:15px;}
+.player-row{background:#16213e;border-radius:10px;padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:12px;border-left:4px solid #e94560;}
+.player-num{font-size:20px;font-weight:bold;color:#ffd700;min-width:40px;}
+.player-info .name{font-size:15px;font-weight:bold;}
+.player-info .pos{font-size:12px;color:#aaa;}
+.add-player-form{background:#111;border-radius:12px;padding:15px;margin-bottom:15px;}
+.inline-row{display:grid;grid-template-columns:70px 1fr 80px 80px;gap:8px;}
+.inline-row input,.inline-row select{padding:10px;background:#16213e;border:1px solid #0f3460;border-radius:8px;color:#fff;font-size:14px;}
+.add-btn{padding:10px;background:#00b894;border:none;border-radius:8px;color:#fff;font-size:14px;font-weight:bold;cursor:pointer;}
+.scoreboard{background:#111;padding:10px 15px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #222;}
+.score-team{text-align:center;}
+.score-team .tname{font-size:11px;color:#aaa;text-transform:uppercase;}
+.score-team .tscore{font-size:28px;font-weight:bold;color:#ffd700;}
+.score-middle{text-align:center;}
+.score-middle .quarter{font-size:13px;color:#e94560;font-weight:bold;}
+.score-middle .gameclock{font-size:18px;font-weight:bold;}
+.score-middle .possession{font-size:11px;color:#00b894;}
+.context-bar{background:#16213e;padding:8px 15px;display:flex;gap:8px;overflow-x:auto;border-bottom:1px solid #0f3460;}
+.ctx-chip{background:#0f3460;border:1px solid #1a4a8a;border-radius:20px;padding:6px 12px;font-size:12px;white-space:nowrap;cursor:pointer;display:flex;align-items:center;gap:5px;}
+.ctx-chip .label{color:#aaa;font-size:10px;}
+.ctx-chip .val{color:#ffd700;font-weight:bold;}
+.section-label{padding:10px 15px 5px;font-size:11px;color:#e94560;text-transform:uppercase;letter-spacing:2px;font-weight:bold;}
+.play-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:8px 15px;}
+.play-btn{padding:16px 8px;border:none;border-radius:12px;color:#fff;font-size:13px;font-weight:bold;cursor:pointer;text-align:center;}
+.play-btn:active{transform:scale(0.93);}
+.play-btn .emoji{font-size:20px;display:block;margin-bottom:4px;}
+.pt-pass{background:#1a4a8a;}.pt-run{background:#1a5c2a;}.pt-td{background:#7a1a1a;}
+.pt-int{background:#5a2a7a;}.pt-fum{background:#7a4a00;}.pt-sack{background:#3a3a00;}
+.pt-fg{background:#005a5a;}.pt-punt{background:#3a1a5a;}.pt-kick{background:#1a3a5a;}
+.pt-pen{background:#5a2000;}.pt-to{background:#2a2a2a;}
+.shot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:8px 15px;}
+.shot-btn{padding:12px 6px;border:none;border-radius:10px;background:#16213e;color:#aaa;font-size:11px;font-weight:bold;cursor:pointer;text-align:center;border:1px solid #0f3460;}
+.shot-btn:active{background:#e94560;color:#fff;}
+.shot-btn .emoji{font-size:16px;display:block;margin-bottom:3px;}
+.player-entry{padding:8px 15px;background:#0d0d0d;border-top:1px solid #1a1a1a;}
+.player-entry-row{display:flex;gap:8px;align-items:center;}
+.player-entry input{flex:1;padding:12px;background:#16213e;border:1px solid #0f3460;border-radius:10px;color:#fff;font-size:16px;}
+.player-name-display{flex:2;padding:12px;background:#0a2a0a;border:1px solid #00b894;border-radius:10px;color:#00b894;font-size:14px;min-height:44px;display:flex;align-items:center;}
+.star-row{display:flex;gap:5px;padding:8px 15px 0;}
+.star{font-size:28px;cursor:pointer;color:#333;}
+.star.active{color:#ffd700;}
+.notes-row{padding:8px 15px;}
+.notes-row textarea{width:100%;padding:10px;background:#16213e;border:1px solid #0f3460;border-radius:10px;color:#fff;font-size:14px;height:55px;resize:none;}
+.log-action{padding:10px 15px 15px;}
+.log-btn{width:100%;padding:20px;background:linear-gradient(135deg,#e94560,#c0392b);border:none;border-radius:15px;color:#fff;font-size:22px;font-weight:bold;cursor:pointer;}
+.log-btn:active{transform:scale(0.97);}
+.clip-log-screen{padding:15px;}
+.clip-entry{background:#16213e;border-radius:10px;padding:12px;margin-bottom:10px;border-left:4px solid #e94560;}
+.clip-entry.td{border-left-color:#ffd700;}
+.clip-entry .clip-type{font-size:16px;font-weight:bold;color:#ffd700;}
+.clip-entry .clip-meta{font-size:12px;color:#aaa;margin-top:4px;}
+.clip-entry .clip-player{font-size:13px;color:#00b894;margin-top:3px;}
+.clip-entry .clip-notes{font-size:12px;color:#ddd;margin-top:4px;font-style:italic;}
+.clip-stars{color:#ffd700;font-size:14px;margin-top:3px;}
+.search-bar{width:100%;padding:14px;background:#16213e;border:1px solid #0f3460;border-radius:10px;color:#fff;font-size:16px;margin-bottom:15px;}
+.export-btn{width:100%;padding:15px;background:linear-gradient(135deg,#6c5ce7,#a29bfe);border:none;border-radius:12px;color:#fff;font-size:16px;font-weight:bold;cursor:pointer;margin-bottom:10px;}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid #222;display:flex;z-index:100;}
+.nav-btn{flex:1;padding:12px 5px;border:none;background:transparent;color:#666;font-size:10px;cursor:pointer;text-align:center;}
+.nav-btn .nav-icon{font-size:22px;display:block;margin-bottom:2px;}
+.nav-btn.active{color:#e94560;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;align-items:flex-end;}
+.modal-overlay.open{display:flex;}
+.modal{background:#16213e;border-radius:20px 20px 0 0;padding:20px;width:100%;max-height:80vh;overflow-y:auto;}
+.modal h3{font-size:18px;margin-bottom:15px;color:#e94560;}
+.modal input,.modal select{width:100%;padding:12px;background:#0f3460;border:1px solid #1a4a8a;border-radius:8px;color:#fff;font-size:16px;margin-bottom:10px;}
+.modal-btn{width:100%;padding:15px;background:#e94560;border:none;border-radius:10px;color:#fff;font-size:16px;font-weight:bold;cursor:pointer;margin-top:5px;}
+.modal-close{width:100%;padding:12px;background:transparent;border:1px solid #333;border-radius:10px;color:#aaa;font-size:14px;cursor:pointer;margin-top:8px;}
+.empty-state{text-align:center;padding:60px 20px;color:#444;}
+.empty-state .icon{font-size:60px;margin-bottom:15px;}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#00b894;color:#fff;padding:12px 25px;border-radius:25px;font-weight:bold;font-size:14px;z-index:300;opacity:0;transition:opacity 0.3s;pointer-events:none;}
+.toast.show{opacity:1;}
+.game-item{background:#16213e;border-radius:12px;padding:15px;margin-bottom:10px;cursor:pointer;border:1px solid #0f3460;}
+.game-item .game-teams{font-size:16px;font-weight:bold;color:#ffd700;}
+.game-item .game-meta{font-size:12px;color:#aaa;margin-top:5px;}
+.game-item .game-clips{font-size:13px;color:#00b894;margin-top:4px;}
+.ctx-modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+</style>
+</head>
+<body>
+<div class="screen active" id="screen-home">
+  <div class="header"><h1>🎬 HIGHLIGHT PRODUCER</h1><span class="live-clock" id="homeClock"></span></div>
+  <div style="padding:20px 20px 10px;"><div style="font-size:13px;color:#aaa;" id="activeGameBanner"></div></div>
+  <div class="home-grid">
+    <button class="home-btn primary wide" onclick="goTo('screen-setup')"><span class="icon">🏈</span>NEW GAME</button>
+    <button class="home-btn wide" onclick="showGamesList()"><span class="icon">📂</span>OPEN GAME</button>
+    <button class="home-btn" onclick="goToRoster()"><span class="icon">👥</span>ROSTERS</button>
+    <button class="home-btn" onclick="goTo('screen-archive')"><span class="icon">🗄️</span>ARCHIVE</button>
+    <button class="home-btn wide" onclick="goToLive()" id="liveBtn" style="display:none;background:#00b894;border-color:#00b894;"><span class="icon">🔴</span>RESUME LIVE LOGGING</button>
+  </div>
+</div>
+<div class="screen" id="screen-setup">
+  <div class="header"><h1>🏈 GAME SETUP</h1></div>
+  <div class="form-screen">
+    <div class="two-col">
+      <div class="form-group"><label>Home Team</label><input type="text" id="homeTeam" placeholder="Eagles"/></div>
+      <div class="form-group"><label>Away Team</label><input type="text" id="awayTeam" placeholder="Cowboys"/></div>
+    </div>
+    <div class="form-group"><label>Venue</label><input type="text" id="venue" placeholder="Stadium name"/></div>
+    <div class="two-col">
+      <div class="form-group"><label>Date</label><input type="date" id="gameDate"/></div>
+      <div class="form-group"><label>Season</label><input type="text" id="season" placeholder="2025"/></div>
+    </div>
+    <div class="two-col">
+      <div class="form-group"><label>Game Type</label><select id="gameType"><option>Regular Season</option><option>Playoff</option><option>Championship</option><option>Bowl Game</option><option>Scrimmage</option></select></div>
+      <div class="form-group"><label>Camera #</label><input type="text" id="setupCamera" placeholder="1"/></div>
+    </div>
+    <div class="two-col">
+      <div class="form-group"><label>Photographer</label><input type="text" id="photographer" placeholder="Your name"/></div>
+      <div class="form-group"><label>Producer</label><input type="text" id="producer" placeholder="Producer"/></div>
+    </div>
+    <button class="btn-primary" onclick="createGame()">▶ START GAME</button>
+    <button class="btn-secondary" onclick="goTo('screen-home')">← BACK</button>
+  </div>
+</div>
+<div class="screen" id="screen-roster">
+  <div class="header"><h1>👥 ROSTER</h1><span id="rosterTeamLabel" style="font-size:13px;color:#ffd700;"></span></div>
+  <div class="roster-screen">
+    <div style="display:flex;gap:8px;margin-bottom:15px;">
+      <button onclick="setRosterTeam('home')" id="rosterHomeBtn" style="flex:1;padding:10px;border:none;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;background:#e94560;color:#fff;">HOME</button>
+      <button onclick="setRosterTeam('away')" id="rosterAwayBtn" style="flex:1;padding:10px;border:none;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;background:#333;color:#aaa;">AWAY</button>
+    </div>
+    <div class="add-player-form">
+      <div style="font-size:12px;color:#e94560;margin-bottom:10px;">ADD PLAYER</div>
+      <div class="inline-row">
+        <input type="number" id="addNum" placeholder="#"/>
+        <input type="text" id="addName" placeholder="Player Name"/>
+        <select id="addPos"><option>QB</option><option>RB</option><option>WR</option><option>TE</option><option>OL</option><option>DL</option><option>LB</option><option>CB</option><option>S</option><option>K</option><option>P</option></select>
+        <select id="addGrade"><option>SR</option><option>JR</option><option>SO</option><option>FR</option><option>N/A</option></select>
+      </div>
+      <input type="text" id="addPhonetic" placeholder="Phonetic pronunciation" style="width:100%;padding:10px;background:#16213e;border:1px solid #0f3460;border-radius:8px;color:#fff;font-size:14px;margin-top:8px;"/>
+      <button class="add-btn" onclick="addPlayer()" style="width:100%;margin-top:8px;padding:12px;">+ ADD PLAYER</button>
+    </div>
+    <div id="rosterList"></div>
+    <button class="btn-secondary" onclick="goBack()">← BACK</button>
+  </div>
+</div>
+<div class="screen" id="screen-live">
+  <div class="scoreboard">
+    <div class="score-team">
+      <div class="tname" id="liveHomeTeam">HOME</div>
+      <div class="tscore" id="homeScore">0</div>
+      <button onclick="adjustScore('home',7)" style="background:#333;border:none;color:#fff;border-radius:5px;padding:3px 8px;font-size:11px;cursor:pointer;margin-top:3px;">+7</button>
+      <button onclick="adjustScore('home',3)" style="background:#333;border:none;color:#fff;border-radius:5px;padding:3px 8px;font-size:11px;cursor:pointer;">+3</button>
+    </div>
+    <div class="score-middle">
+      <div class="quarter" id="liveQuarterDisplay">Q1</div>
+      <div class="gameclock" id="liveClockDisplay">15:00</div>
+      <div class="possession" id="livePossDisplay">Possession: -</div>
+      <div style="font-size:11px;color:#aaa;" id="liveTOD"></div>
+    </div>
+    <div class="score-team">
+      <div class="tname" id="liveAwayTeam">AWAY</div>
+      <div class="tscore" id="awayScore">0</div>
+      <button onclick="adjustScore('away',7)" style="background:#333;border:none;color:#fff;border-radius:5px;padding:3px 8px;font-size:11px;cursor:pointer;margin-top:3px;">+7</button>
+      <button onclick="adjustScore('away',3)" style="background:#333;border:none;color:#fff;border-radius:5px;padding:3px 8px;font-size:11px;cursor:pointer;">+3</button>
+    </div>
+  </div>
+  <div class="context-bar">
+    <div class="ctx-chip" onclick="openCtxModal()"><span class="label">Q</span><span class="val" id="ctxQuarter">1</span></div>
+    <div class="ctx-chip" onclick="openCtxModal()"><span class="label">CLOCK</span><span class="val" id="ctxClock">15:00</span></div>
+    <div class="ctx-chip" onclick="openCtxModal()"><span class="label">POSS</span><span class="val" id="ctxPoss">-</span></div>
+    <div class="ctx-chip" onclick="openCtxModal()"><span class="label">QB</span><span class="val" id="ctxQB">-</span></div>
+    <div class="ctx-chip" onclick="openCtxModal()"><span class="label">CAM</span><span class="val" id="ctxCam">1</span></div>
+    <div class="ctx-chip" onclick="openCtxModal()"><span class="label">DOWN</span><span class="val" id="ctxDown">1st &amp; 10</span></div>
+  </div>
+  <div class="section-label">⚡ PLAY TYPE</div>
+  <div class="play-grid">
+    <button class="play-btn pt-pass" onclick="selectPlay('Pass')"><span class="emoji">🎯</span>PASS</button>
+    <button class="play-btn pt-run" onclick="selectPlay('Run')"><span class="emoji">🏃</span>RUN</button>
+    <button class="play-btn pt-td" onclick="selectPlay('Touchdown')"><span class="emoji">🏆</span>TD</button>
+    <button class="play-btn pt-int" onclick="selectPlay('Interception')"><span class="emoji">🔄</span>INT</button>
+    <button class="play-btn pt-fum" onclick="selectPlay('Fumble')"><span class="emoji">💥</span>FUMBLE</button>
+    <button class="play-btn pt-sack" onclick="selectPlay('Sack')"><span class="emoji">⬇️</span>SACK</button>
+    <button class="play-btn pt-fg" onclick="selectPlay('Field Goal')"><span class="emoji">🥅</span>FG</button>
+    <button class="play-btn pt-punt" onclick="selectPlay('Punt')"><span class="emoji">🦶</span>PUNT</button>
+    <button class="play-btn pt-kick" onclick="selectPlay('Kickoff')"><span class="emoji">👟</span>KICK</button>
+    <button class="play-btn pt-pen" onclick="selectPlay('Penalty')"><span class="emoji">🚩</span>PEN</button>
+    <button class="play-btn pt-to" onclick="selectPlay('Timeout')"><span class="emoji">⏸️</span>T/O</button>
+    <button class="play-btn" style="background:#1a3a1a;" onclick="selectPlay('Big Play')"><span class="emoji">⭐</span>BIG PLAY</button>
+  </div>
+  <div class="section-label">📷 SHOT TYPE</div>
+  <div class="shot-grid">
+    <button class="shot-btn" onclick="selectShot('Establishing')"><span class="emoji">🏟️</span>ESTAB</button>
+    <button class="shot-btn" onclick="selectShot('Crowd')"><span class="emoji">👥</span>CROWD</button>
+    <button class="shot-btn" onclick="selectShot('Coach')"><span class="emoji">📋</span>COACH</button>
+    <button class="shot-btn" onclick="selectShot('Sideline')"><span class="emoji">🏈</span>SIDELINE</button>
+    <button class="shot-btn" onclick="selectShot('Interview')"><span class="emoji">🎤</span>INTRVW</button>
+    <button class="shot-btn" onclick="selectShot('B-Roll')"><span class="emoji">🎬</span>B-ROLL</button>
+    <button class="shot-btn" onclick="selectShot('Replay')"><span class="emoji">🔁</span>REPLAY</button>
+    <button class="shot-btn" onclick="selectShot('Reaction')"><span class="emoji">😮</span>REACT</button>
+  </div>
+  <div style="padding:8px 15px;background:#0d1117;border-top:1px solid #1a1a1a;border-bottom:1px solid #1a1a1a;">
+    <span style="font-size:12px;color:#aaa;">LOGGING: </span>
+    <span style="font-size:14px;font-weight:bold;color:#ffd700;" id="currentSelection">Tap a play or shot type above</span>
+  </div>
+  <div class="player-entry">
+    <div class="player-entry-row">
+      <input type="number" id="playerNumInput" placeholder="#" style="max-width:70px;" oninput="lookupPlayer()"/>
+      <div class="player-name-display" id="playerNameDisplay">Player name auto-fills</div>
+    </div>
+  </div>
+  <div class="star-row">
+    <span style="font-size:12px;color:#aaa;line-height:28px;margin-right:5px;">RATING:</span>
+    <span class="star" onclick="setRating(1)" id="star1">★</span>
+    <span class="star" onclick="setRating(2)" id="star2">★</span>
+    <span class="star" onclick="setRating(3)" id="star3">★</span>
+    <span class="star" onclick="setRating(4)" id="star4">★</span>
+    <span class="star" onclick="setRating(5)" id="star5">★</span>
+  </div>
+  <div class="notes-row"><textarea id="clipNotes" placeholder="Notes, keywords, story angles..."></textarea></div>
+  <div class="log-action"><button class="log-btn" onclick="logClip()">⚡ LOG IT</button></div>
+</div>
+<div class="screen" id="screen-clips">
+  <div class="header"><h1>📋 CLIP LOG</h1><span id="clipCount" style="font-size:13px;color:#ffd700;"></span></div>
+  <div style="padding:10px 15px;"><input type="text" class="search-bar" id="clipSearchInput" placeholder="Search clips..." oninput="filterClips()"/></div>
+  <div id="clipLogList" style="padding:0 15px 80px;"></div>
+</div>
+<div class="screen" id="screen-archive">
+  <div class="header"><h1>🗄️ ARCHIVE</h1></div>
+  <div style="padding:15px;"><div id="gamesList"></div><button class="btn-secondary" onclick="goTo('screen-home')" style="margin-top:10px;">← BACK</button></div>
+</div>
+<div class="screen" id="screen-export">
+  <div class="header"><h1>📊 EXPORT</h1></div>
+  <div style="padding:20px;">
+    <button class="export-btn" onclick="exportClipsCSV()">📥 Export Clips CSV</button>
+    <button class="export-btn" style="background:linear-gradient(135deg,#00b894,#00cec9);" onclick="exportScript()">📋 Generate Anchor Script</button>
+    <button class="export-btn" style="background:linear-gradient(135deg,#e17055,#d63031);" onclick="exportRoster()">👥 Export Roster CSV</button>
+    <div id="scriptOutput" style="margin-top:15px;background:#16213e;border-radius:10px;padding:15px;display:none;">
+      <div style="font-size:12px;color:#e94560;margin-bottom:10px;">GENERATED SCRIPT</div>
+      <pre id="scriptText" style="font-size:13px;color:#ddd;white-space:pre-wrap;line-height:1.6;"></pre>
+    </div>
+    <button class="btn-secondary" onclick="goBack()" style="margin-top:10px;">← BACK</button>
+  </div>
+</div>
+<div class="bottom-nav" id="bottomNav" style="display:none;">
+  <button class="nav-btn" onclick="goTo('screen-home')"><span class="nav-icon">🏠</span>HOME</button>
+  <button class="nav-btn" onclick="goToLive()"><span class="nav-icon">🔴</span>LIVE</button>
+  <button class="nav-btn" onclick="showClips()"><span class="nav-icon">📋</span>CLIPS</button>
+  <button class="nav-btn" onclick="goToRoster()"><span class="nav-icon">👥</span>ROSTER</button>
+  <button class="nav-btn" onclick="goTo('screen-export')"><span class="nav-icon">📊</span>EXPORT</button>
+</div>
+<div class="modal-overlay" id="ctxModal">
+  <div class="modal">
+    <h3>⚙️ Update Game Context</h3>
+    <div class="ctx-modal-grid">
+      <div><label style="font-size:11px;color:#aaa;display:block;margin-bottom:5px;">QUARTER</label><select id="modalQuarter"><option value="1">Q1</option><option value="2">Q2</option><option value="3">Q3</option><option value="4">Q4</option><option value="OT">OT</option></select></div>
+      <div><label style="font-size:11px;color:#aaa;display:block;margin-bottom:5px;">GAME CLOCK</label><input type="text" id="modalClock" placeholder="12:34"/></div>
+      <div><label style="font-size:11px;color:#aaa;display:block;margin-bottom:5px;">POSSESSION</label><select id="modalPoss"><option value="-">None</option><option value="home">Home</option><option value="away">Away</option></select></div>
+      <div><label style="font-size:11px;color:#aaa;display:block;margin-bottom:5px;">CAMERA #</label><input type="text" id="modalCam" placeholder="1"/></div>
+    </div>
+    <label style="font-size:11px;color:#aaa;display:block;margin:10px 0 5px;">QB # or NAME</label>
+    <input type="text" id="modalQB" placeholder="QB number or name"/>
+    <label style="font-size:11px;color:#aaa;display:block;margin:10px 0 5px;">DOWN & DISTANCE</label>
+    <input type="text" id="modalDown" placeholder="1st & 10"/>
+    <button class="modal-btn" onclick="saveContext()">✅ SAVE</button>
+    <button class="modal-close" onclick="closeModal('ctxModal')">Cancel</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+let state={currentGame:null,currentTeam:"home",games:[],clips:[],rosters:{home:[],away:[]},context:{quarter:"1",clock:"15:00",poss:"-",qb:"-",cam:"1",down:"1st & 10"},score:{home:0,away:0},selectedPlay:null,selectedShot:null,rating:0,prevScreen:"screen-home"};
+function save(){try{localStorage.setItem("hp_state",JSON.stringify({games:state.games,clips:state.clips,rosters:state.rosters,currentGame:state.currentGame,context:state.context,score:state.score}));}catch(e){}}
+function load(){try{const d=JSON.parse(localStorage.getItem("hp_state")||"{}");if(d.games)state.games=d.games;if(d.clips)state.clips=d.clips;if(d.rosters)state.rosters=d.rosters;if(d.currentGame)state.currentGame=d.currentGame;if(d.context)state.context=d.context;if(d.score)state.score=d.score;}catch(e){}}
+function updateClocks(){const t=new Date().toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit",second:"2-digit"});["homeClock"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=t;});const tod=document.getElementById("liveTOD");if(tod)tod.textContent=t;}
+setInterval(updateClocks,1000);updateClocks();
+function goTo(screenId){state.prevScreen=document.querySelector(".screen.active")?.id||"screen-home";document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(screenId).classList.add("active");const showNav=["screen-live","screen-clips","screen-export","screen-roster"].includes(screenId);document.getElementById("bottomNav").style.display=showNav?"flex":"none";if(screenId==="screen-home")updateHomeBanner();if(screenId==="screen-clips")renderClips();if(screenId==="screen-live")updateLiveUI();if(screenId==="screen-archive")renderArchive();}
+function goBack(){goTo(state.prevScreen||"screen-home");}
+function goToLive(){if(!state.currentGame){showToast("No active game! Create a game first.");return;}goTo("screen-live");}
+function goToRoster(){if(!state.currentGame){showToast("Create a game first!");return;}goTo("screen-roster");renderRoster();}
+function showGamesList(){goTo("screen-archive");renderArchive();}
+function updateHomeBanner(){const banner=document.getElementById("activeGameBanner");const liveBtn=document.getElementById("liveBtn");if(state.currentGame){banner.textContent="🔴 Active: "+state.currentGame.homeTeam+" vs "+state.currentGame.awayTeam+" - "+state.currentGame.date;liveBtn.style.display="block";}else{banner.textContent="No active game";liveBtn.style.display="none";}}
+function createGame(){const home=document.getElementById("homeTeam").value.trim();const away=document.getElementById("awayTeam").value.trim();if(!home||!away){showToast("Enter both team names!");return;}state.currentGame={id:Date.now(),homeTeam:home,awayTeam:away,venue:document.getElementById("venue").value.trim(),date:document.getElementById("gameDate").value||new Date().toLocaleDateString(),season:document.getElementById("season").value.trim(),gameType:document.getElementById("gameType").value,camera:document.getElementById("setupCamera").value.trim()||"1",photographer:document.getElementById("photographer").value.trim(),producer:document.getElementById("producer").value.trim(),created:new Date().toISOString()};state.score={home:0,away:0};state.context={quarter:"1",clock:"15:00",poss:"-",qb:"-",cam:state.currentGame.camera,down:"1st & 10"};state.rosters={home:[],away:[]};state.games.push({...state.currentGame});save();showToast("Game created! "+home+" vs "+away);goTo("screen-live");}
+let rosterTeam="home";
+function setRosterTeam(team){rosterTeam=team;document.getElementById("rosterHomeBtn").style.background=team==="home"?"#e94560":"#333";document.getElementById("rosterHomeBtn").style.color=team==="home"?"#fff":"#aaa";document.getElementById("rosterAwayBtn").style.background=team==="away"?"#e94560":"#333";document.getElementById("rosterAwayBtn").style.color=team==="away"?"#fff":"#aaa";document.getElementById("rosterTeamLabel").textContent=team==="home"?(state.currentGame?.homeTeam||"Home"):(state.currentGame?.awayTeam||"Away");renderRoster();}
+function addPlayer(){const num=document.getElementById("addNum").value.trim();const name=document.getElementById("addName").value.trim();const pos=document.getElementById("addPos").value;const grade=document.getElementById("addGrade").value;const phonetic=document.getElementById("addPhonetic").value.trim();if(!num||!name){showToast("Enter number and name!");return;}if(!state.rosters[rosterTeam])state.rosters[rosterTeam]=[];state.rosters[rosterTeam].push({num,name,pos,grade,phonetic});state.rosters[rosterTeam].sort((a,b)=>parseInt(a.num)-parseInt(b.num));document.getElementById("addNum").value="";document.getElementById("addName").value="";document.getElementById("addPhonetic").value="";save();renderRoster();showToast("Added #"+num+" "+name);}
+function renderRoster(){const list=document.getElementById("rosterList");const roster=state.rosters[rosterTeam]||[];if(roster.length===0){list.innerHTML="<div class='empty-state'><div class='icon'>👤</div>No players yet!</div>";return;}list.innerHTML=roster.map((p,i)=>"<div class='player-row'><div class='player-num'>#"+p.num+"</div><div class='player-info' style='flex:1;'><div class='name'>"+p.name+"</div><div class='pos'>"+p.pos+" · "+p.grade+(p.phonetic?" · "+p.phonetic:"")+"</div></div><button onclick='removePlayer("+i+")' style='background:none;border:none;color:#e94560;font-size:20px;cursor:pointer;'>✕</button></div>").join("");}
+function removePlayer(idx){state.rosters[rosterTeam].splice(idx,1);save();renderRoster();}
+function updateLiveUI(){if(!state.currentGame)return;const g=state.currentGame;document.getElementById("liveHomeTeam").textContent=g.homeTeam;document.getElementById("liveAwayTeam").textContent=g.awayTeam;document.getElementById("homeScore").textContent=state.score.home;document.getElementById("awayScore").textContent=state.score.away;const ctx=state.context;document.getElementById("liveQuarterDisplay").textContent="Q"+ctx.quarter;document.getElementById("liveClockDisplay").textContent=ctx.clock;const pTeam=ctx.poss==="home"?g.homeTeam:ctx.poss==="away"?g.awayTeam:"-";document.getElementById("livePossDisplay").textContent="Possession: "+pTeam;document.getElementById("ctxQuarter").textContent=ctx.quarter;document.getElementById("ctxClock").textContent=ctx.clock;document.getElementById("ctxPoss").textContent=ctx.poss==="home"?g.homeTeam.substring(0,4):ctx.poss==="away"?g.awayTeam.substring(0,4):"-";document.getElementById("ctxQB").textContent=ctx.qb||"-";document.getElementById("ctxCam").textContent=ctx.cam||"1";document.getElementById("ctxDown").textContent=ctx.down||"-";}
+function adjustScore(team,pts){state.score[team]+=pts;document.getElementById(team+"Score").textContent=state.score[team];save();}
+function selectPlay(type){state.selectedPlay=type;state.selectedShot=null;document.getElementById("currentSelection").textContent="🏈 "+type;document.getElementById("currentSelection").style.color="#ffd700";}
+function selectShot(type){state.selectedShot=type;state.selectedPlay=null;document.getElementById("currentSelection").textContent="📷 "+type;document.getElementById("currentSelection").style.color="#74b9ff";}
+function setRating(n){state.rating=n;for(let i=1;i<=5;i++){document.getElementById("star"+i).classList.toggle("active",i<=n);}}
+function lookupPlayer(){const num=document.getElementById("playerNumInput").value.trim();const display=document.getElementById("playerNameDisplay");if(!num){display.textContent="Player name auto-fills";display.style.color="#444";return;}const poss=state.context.poss;const rosterKey=poss==="home"?"home":poss==="away"?"away":null;const roster=rosterKey?(state.rosters[rosterKey]||[]):[...(state.rosters.home||[]),...(state.rosters.away||[])];const player=roster.find(p=>p.num===num);if(player){display.textContent="#"+player.num+" "+player.name+" · "+player.pos+(player.phonetic?" ("+player.phonetic+")":"");display.style.color="#00b894";}else{display.textContent="#"+num+" - not in roster";display.style.color="#e94560";}}
+function logClip(){if(!state.selectedPlay&&!state.selectedShot){showToast("Select a play or shot type first!");return;}const now=new Date();const tod=now.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false});const num=document.getElementById("playerNumInput").value.trim();const poss=state.context.poss;const rosterKey=poss==="home"?"home":poss==="away"?"away":null;const roster=rosterKey?(state.rosters[rosterKey]||[]):[...(state.rosters.home||[]),...(state.rosters.away||[])];const player=num?roster.find(p=>p.num===num):null;const clip={id:Date.now(),gameId:state.currentGame.id,gameTeams:state.currentGame.homeTeam+" vs "+state.currentGame.awayTeam,type:state.selectedPlay||state.selectedShot,category:state.selectedPlay?"play":"shot",quarter:state.context.quarter,gameClock:state.context.clock,timeOfDay:tod,possession:state.context.poss,camera:state.context.cam,down:state.context.down,qb:state.context.qb,playerNum:num||"",playerName:player?player.name:"",playerPos:player?player.pos:"",rating:state.rating,notes:document.getElementById("clipNotes").value.trim(),scoreHome:state.score.home,scoreAway:state.score.away,homeTeam:state.currentGame.homeTeam,awayTeam:state.currentGame.awayTeam,timestamp:now.toISOString()};state.clips.unshift(clip);save();state.selectedPlay=null;state.selectedShot=null;state.rating=0;document.getElementById("currentSelection").textContent="Tap a play or shot type above";document.getElementById("currentSelection").style.color="#ffd700";document.getElementById("playerNumInput").value="";document.getElementById("playerNameDisplay").textContent="Player name auto-fills";document.getElementById("playerNameDisplay").style.color="#444";document.getElementById("clipNotes").value="";for(let i=1;i<=5;i++)document.getElementById("star"+i).classList.remove("active");showToast("Logged: "+clip.type+" Q"+clip.quarter+" "+clip.gameClock);}
+function openCtxModal(){const ctx=state.context;document.getElementById("modalQuarter").value=ctx.quarter;document.getElementById("modalClock").value=ctx.clock;document.getElementById("modalPoss").value=ctx.poss;document.getElementById("modalCam").value=ctx.cam;document.getElementById("modalQB").value=ctx.qb==="-"?"":ctx.qb;document.getElementById("modalDown").value=ctx.down;document.getElementById("ctxModal").classList.add("open");}
+function saveContext(){state.context={quarter:document.getElementById("modalQuarter").value,clock:document.getElementById("modalClock").value||"15:00",poss:document.getElementById("modalPoss").value,cam:document.getElementById("modalCam").value||"1",qb:document.getElementById("modalQB").value||"-",down:document.getElementById("modalDown").value||"1st & 10"};closeModal("ctxModal");updateLiveUI();save();}
+function closeModal(id){document.getElementById(id).classList.remove("open");}
+function showClips(){goTo("screen-clips");renderClips();}
+function renderClips(filtered){const list=document.getElementById("clipLogList");const clips=filtered||state.clips.filter(c=>c.gameId===state.currentGame?.id);document.getElementById("clipCount").textContent=clips.length+" clips";if(clips.length===0){list.innerHTML="<div class='empty-state'><div class='icon'>📋</div>No clips logged yet!</div>";return;}list.innerHTML=clips.map(c=>"<div class='clip-entry "+(c.type==="Touchdown"?"td":"")+"'><div class='clip-type'>"+(c.category==="play"?"🏈":"📷")+" "+c.type+"</div><div class='clip-meta'>Q"+c.quarter+" · "+c.gameClock+" · TOD: "+c.timeOfDay+" · CAM "+c.camera+"</div><div class='clip-meta'>"+c.homeTeam+" "+c.scoreHome+" - "+c.awayTeam+" "+c.scoreAway+"</div>"+(c.playerNum?"<div class='clip-player'>#"+c.playerNum+" "+c.playerName+(c.playerPos?" · "+c.playerPos:"")+"</div>":"")+(c.rating?"<div class='clip-stars'>"+"★".repeat(c.rating)+"☆".repeat(5-c.rating)+"</div>":"")+(c.notes?"<div class='clip-notes'>"+c.notes+"</div>":"")+"</div>").join("");}
+function filterClips(){const q=document.getElementById("clipSearchInput").value.toLowerCase();const clips=state.clips.filter(c=>c.gameId===state.currentGame?.id&&(c.type.toLowerCase().includes(q)||c.notes.toLowerCase().includes(q)||c.playerName.toLowerCase().includes(q)));renderClips(clips);}
+function renderArchive(){const list=document.getElementById("gamesList");if(state.games.length===0){list.innerHTML="<div class='empty-state'><div class='icon'>🗄️</div>No saved games yet.</div>";return;}list.innerHTML=[...state.games].reverse().map(g=>{const clipCount=state.clips.filter(c=>c.gameId===g.id).length;return"<div class='game-item' onclick='loadGame("+g.id+")'><div class='game-teams'>🏈 "+g.homeTeam+" vs "+g.awayTeam+"</div><div class='game-meta'>📅 "+g.date+" · "+(g.venue||"No venue")+" · "+g.gameType+"</div><div class='game-clips'>📋 "+clipCount+" clips logged</div></div>";}).join("");}
+function loadGame(id){const game=state.games.find(g=>g.id===id);if(!game)return;state.currentGame=game;state.score={home:0,away:0};save();showToast("Loaded: "+game.homeTeam+" vs "+game.awayTeam);goTo("screen-live");}
+function exportClipsCSV(){const clips=state.clips.filter(c=>c.gameId===state.currentGame?.id);if(!clips.length){showToast("No clips to export!");return;}const headers=["Time of Day","Quarter","Game Clock","Type","Category","Player #","Player Name","Position","Rating","Camera","Down","QB","Score","Notes","Game","Timestamp"];let csv=headers.join(",")+"
+";clips.forEach(c=>{csv+=[c.timeOfDay,c.quarter,c.gameClock,'"'+c.type+'"',c.category,c.playerNum,'"'+c.playerName+'"',c.playerPos,c.rating,c.camera,'"'+c.down+'"','"'+c.qb+'"','"'+c.homeTeam+" "+c.scoreHome+"-"+c.awayTeam+" "+c.scoreAway+'"','"'+c.notes+'"','"'+c.gameTeams+'"',c.timestamp].join(",")+"
+";});dlFile(csv,"text/csv","highlights_"+state.currentGame.homeTeam+"_vs_"+state.currentGame.awayTeam+".csv");}
+function exportScript(){const clips=state.clips.filter(c=>c.gameId===state.currentGame?.id&&c.category==="play"&&c.rating>=3);if(!clips.length){showToast("Rate clips 3+ stars first!");return;}const g=state.currentGame;let script="HIGHLIGHT SCRIPT
+"+g.homeTeam+" vs "+g.awayTeam+" - "+g.date+"
+"+"=".repeat(40)+"
+
+ESTABLISHING SHOT:
+[WIDE SHOT] - "+(g.venue||"Stadium")+", "+g.date+"
+
+HIGHLIGHT PLAYS:
+
+";clips.slice(0,5).forEach((c,i)=>{const player=c.playerName?"#"+c.playerNum+" "+c.playerName:"the player";const qb=c.qb&&c.qb!=="-"?"QB "+c.qb:"the quarterback";let line="";if(c.type==="Touchdown")line=qb+" connects with "+player+" for the TOUCHDOWN! "+c.homeTeam+" "+c.scoreHome+", "+c.awayTeam+" "+c.scoreAway+".";else if(c.type==="Pass")line=qb+" fires to "+player+" - "+(c.notes||"a key completion")+".";else if(c.type==="Run")line=player+" takes the carry - "+(c.notes||"picking up yardage")+".";else if(c.type==="Interception")line="INTERCEPTED! "+player+" makes the pick in quarter "+c.quarter+"!";else if(c.type==="Sack")line=player+" gets the sack - big defensive play in Q"+c.quarter+"!";else if(c.type==="Field Goal")line="The kick is GOOD! "+c.homeTeam+" "+c.scoreHome+", "+c.awayTeam+" "+c.scoreAway+".";else line=c.type+" - Q"+c.quarter+" "+c.gameClock+". "+(c.notes||"");script+="PLAY "+(i+1)+" [Q"+c.quarter+" "+c.gameClock+" · CAM "+c.camera+"]
+"+line+"
+"+(c.notes?"PRODUCER NOTE: "+c.notes+"
+":"")+"
+";});script+="FINAL SCORE:
+"+g.homeTeam+" "+state.score.home+" - "+g.awayTeam+" "+state.score.away+"
+";document.getElementById("scriptOutput").style.display="block";document.getElementById("scriptText").textContent=script;if(navigator.clipboard)navigator.clipboard.writeText(script).then(()=>showToast("Script copied!"));}
+function exportRoster(){let csv="Team,Number,Name,Position,Grade,Phonetic
+";["home","away"].forEach(t=>{const tName=t==="home"?state.currentGame?.homeTeam:state.currentGame?.awayTeam;(state.rosters[t]||[]).forEach(p=>{csv+='"'+tName+'",'+p.num+',"'+p.name+'","'+p.pos+'","'+p.grade+'","'+p.phonetic+'"
+';});});dlFile(csv,"text/csv","roster_export.csv");}
+function dlFile(content,type,filename){const blob=new Blob([content],{type});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;a.click();}
+function showToast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2500);}
+window.onload=function(){load();updateHomeBanner();document.getElementById("gameDate").value=new Date().toISOString().split("T")[0];};
+</script>
+</body>
+</html>
