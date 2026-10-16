@@ -1,0 +1,768 @@
+
+ppr.html
+
+100%
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#0b0f14">
+<title>PPR Football Tracker</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:#0b0f14;color:#e8eef5;font-family:Roboto,Arial,sans-serif;font-size:18px}
+body{padding:0 0 84px 0}
+body.haslog{padding-bottom:178px}
+#wrap{max-width:960px;margin:0 auto;padding:6px 10px}
+header{display:flex;justify-content:space-between;align-items:center;padding:2px 2px 6px;border-bottom:1px solid #22303f;margin-bottom:6px;gap:8px}
+header b{color:#ffd23f;font-size:17px;white-space:nowrap}
+header small{color:#c9d6e3;font-size:13px;text-align:right}
+.warn{background:#a31515;color:#fff;padding:8px 10px;border-radius:8px;margin-bottom:8px;font-weight:bold}
+button{font:inherit;color:#e8eef5;background:#1b2836;border:1px solid #2d4156;border-radius:10px;min-height:48px;padding:4px 10px}
+button:active{background:#2a3d52}
+button.on{background:#ffd23f;color:#111;border-color:#ffd23f;font-weight:bold}
+button.big{min-height:60px;font-size:21px;font-weight:bold}
+button.go{background:#1f8f4e;border-color:#1f8f4e;color:#fff}
+button.red{background:#8f1f1f;border-color:#8f1f1f;color:#fff}
+.lbl{color:#8fa3b8;font-size:13px;text-transform:uppercase;letter-spacing:.06em;margin:10px 2px 4px}
+.segrow{display:flex;gap:6px}
+.segrow .seg{flex:1}
+.toprow{display:grid;grid-template-columns:1.4fr 1fr .9fr;gap:6px;margin-bottom:6px}
+.toprow button{min-height:60px;font-size:19px;font-weight:bold;padding:2px}
+.markb{background:#1f5f9f;border-color:#1f5f9f;color:#fff}
+.tdb.on{background:#1f8f4e;border-color:#1f8f4e;color:#fff}
+.marks{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.mk{min-height:38px;font-size:15px;padding:2px 10px;border-color:#1f5f9f}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:6px 0}
+.grid4 .seg{min-height:46px;font-size:16px;padding:2px}
+.frow{display:grid;grid-template-columns:.9fr 1.8fr 1.3fr;gap:6px}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+label{display:block;color:#8fa3b8;font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+input,textarea{display:block;width:100%;margin-top:2px;font:inherit;font-size:21px;color:#fff;background:#111b26;border:1px solid #2d4156;border-radius:10px;padding:8px 10px;min-height:50px}
+textarea{resize:none;font-size:17px;min-height:0}
+input:focus,textarea:focus{outline:2px solid #ffd23f}
+.ywrap{display:flex;gap:4px}.ywrap input{min-width:0}.ywrap .neg{margin-top:2px;min-width:46px;padding:0}
+.notewrap{display:flex;gap:6px;align-items:flex-end}.notewrap label{flex:1}.notewrap button{min-height:56px;min-width:56px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+.row3{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:6px;margin-bottom:8px;align-items:center}
+.card{background:#111b26;border:1px solid #22303f;border-radius:12px;padding:10px;margin-bottom:8px}
+.card.edit{border-color:#1f5f9f}.plt{font-family:monospace;font-size:1.25em;color:#ffd23f}
+.play{display:flex;gap:8px;align-items:center;background:#111b26;border:1px solid #22303f;border-radius:12px;padding:8px;margin-bottom:6px}
+.play.st{border-color:#ffd23f}
+.play.sc{border-left:7px solid #1f8f4e}
+.play.pend{border:2px dashed #1f5f9f}
+.play .star{font-size:30px;min-width:54px;color:#ffd23f}
+.play .star.off{color:#4a5c70}
+.pm{flex:1;min-width:0}.l1{color:#8fa3b8;font-size:14px}.l2{font-size:18px}.l3{color:#c9d6e3;font-size:15px}
+.chip{background:#1f8f4e;color:#fff;padding:1px 9px;border-radius:10px;font-size:13px;font-weight:bold;margin-left:6px}
+.pa{display:flex;flex-direction:column;gap:4px}.pa button{min-height:40px;padding:2px 10px;font-size:15px}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:#0b0f14;border-top:1px solid #22303f;z-index:5}
+nav button{flex:1;border-radius:0;border:0;min-height:66px;background:#0b0f14;font-size:15px}
+nav button.on{background:#ffd23f;color:#111}
+#strip{position:fixed;left:0;right:0;bottom:66px;background:#0b0f14;border-top:1px solid #22303f;padding:6px 8px;z-index:4;display:none}
+#strip .seg{min-height:42px}
+.qbrow{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+.qbchip{min-height:38px;font-size:14px;padding:2px 8px;text-align:left;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.qbchip b{color:#ffd23f}
+#toast{position:fixed;top:10px;left:50%;transform:translateX(-50%);background:#1f8f4e;color:#fff;padding:10px 18px;border-radius:20px;z-index:50;display:none;font-weight:bold;max-width:92%;text-align:center}
+.modalbg{position:fixed;left:0;right:0;top:0;bottom:0;background:rgba(0,0,0,.8);z-index:20;overflow:auto;padding:12px}
+.modal{max-width:520px;margin:0 auto;background:#16222f;border:1px solid #2d4156;border-radius:14px;padding:14px}
+.shot .hd{color:#8fa3b8;font-size:14px}
+.shot .ds{font-size:19px;font-weight:bold;line-height:1.25;margin:2px 0}
+.shot .sc2{color:#7be0a4;font-weight:bold}
+.shot .nt{color:#8fa3b8;font-size:14px}
+.phx{color:#ffd23f}
+#read{position:fixed;left:0;right:0;top:0;bottom:0;background:#000;color:#fff;z-index:40;display:flex;flex-direction:column}
+.rtop{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;color:#8fa3b8;gap:6px}
+.rtop button{min-height:44px;min-width:52px}
+.rbody{flex:1;overflow:auto;padding:10px 18px}
+.rline{font-weight:bold;line-height:1.15}
+.rsc{color:#7be0a4;margin-top:18px;font-weight:bold;line-height:1.2}
+.rnav{display:flex;gap:8px;padding:10px}.rnav button{flex:1;min-height:80px;font-size:26px;font-weight:bold}
+.muted{color:#8fa3b8;font-size:14px}
+.stack button{width:100%;margin-bottom:8px}
+@media (min-width:700px){.grid4{grid-template-columns:repeat(6,1fr)}.form{grid-template-columns:repeat(3,1fr)}body{font-size:20px}}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+<div id="wrap"></div>
+<div id="strip"></div>
+<nav id="nav"></nav>
+<div id="overlay"></div>
+<script>
+(function(){
+var KEY='ppr_fb_v1';
+var TYPES=['Rush','Pass','Sack','INT','Fumble','Punt','KO Ret','Punt Ret','FG','Tackle','Safety','Other'];
+var DEFTYPES={Sack:1,INT:1,Fumble:1,Tackle:1,Safety:1};
+var GRADES=['Fr','So','Jr','Sr'];
+var QS=['1','2','3','4','OT'];
+var S, storeOK=true, savedAt='';
+var ui={autoStar:false,tab:'log',draft:null,editId:null,onlyStar:false,onlyScore:false,rside:'home',modal:null,read:false,readIdx:0,font:56,auto:false};
+
+function p2(n){return n<10?'0'+n:''+n}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function $(id){return document.getElementById(id)}
+function qsa(sel){return Array.prototype.slice.call(document.querySelectorAll(sel))}
+function trim(s){return String(s==null?'':s).replace(/^\s+|\s+$/g,'')}
+function today(){var d=new Date();return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())}
+function tod(ms,off){var d=new Date(ms+(off||0)*1000);return p2(d.getHours())+':'+p2(d.getMinutes())+':'+p2(d.getSeconds())}
+function secOfDay(ms,off){var d=new Date(ms+(off||0)*1000);return d.getHours()*3600+d.getMinutes()*60+d.getSeconds()}
+function pl(n){return n===1?'':'s'}
+function other(s){return s==='home'?'away':'home'}
+function tk(side){var n=trim((S.game[side]||'').toLowerCase().replace(/\s+/g,' '));return n||side}
+function isPending(p){return !!p.pending}
+function isScore(p){return !p.pending&&(!!p.td||p.type==='FG'||p.type==='Safety')}
+function byTs(a,b){return a.ts-b.ts}
+
+function defaults(){return {game:{home:'Home',away:'Away',date:today(),offset:0},station:{scriptNo:'',homeRec:'',awayRec:'',establisher:'',statistic:'',producer:'',photog:''},clips:[],qbs:{},rosters:{},plays:[],cur:{side:'home',q:'1',type:'Rush'}}}
+var SEED={"carlsbad":{"0":{"name":"Travis Jeffrey","phon":"","grade":"Sr","pos":"CB, WR"},"2":{"name":"Landon Trautt","phon":"","grade":"Sr","pos":"LB, WR"},"3":{"name":"Darian Webb","phon":"","grade":"Sr","pos":"RB, LB"},"4":{"name":"Mario Anguiano","phon":"","grade":"Jr","pos":"DE, TE"},"5":{"name":"Brendan Prasuhn","phon":"","grade":"Sr","pos":"WR, DB"},"6":{"name":"Kai Brown","phon":"","grade":"Sr","pos":"RB, MLB"},"7":{"name":"Dylan Sims","phon":"","grade":"Sr","pos":"MLB, RB"},"8":{"name":"Jonathan Woods","phon":"","grade":"Sr","pos":"CB, WR"},"9":{"name":"Trent Kellas","phon":"","grade":"Sr","pos":"TE, DE"},"10":{"name":"Antonio D'Alessandro","phon":"","grade":"Jr","pos":"QB"},"11":{"name":"Nehemiah Bynoe","phon":"","grade":"Jr","pos":"WR, FS"},"12":{"name":"Colt Hobgood","phon":"","grade":"Jr","pos":"RB, LB"},"13":{"name":"Colt Rocha","phon":"","grade":"Jr","pos":"CB, WR"},"14":{"name":"Leuc Wilby","phon":"","grade":"Sr","pos":"QB"},"15":{"name":"William Junge","phon":"","grade":"Jr","pos":"MLB, TE, FB"},"16":{"name":"Enzo Tapia","phon":"","grade":"So","pos":"QB"},"17":{"name":"Jackson Ferguson","phon":"","grade":"Sr","pos":"WR, DB"},"18":{"name":"Elijah Fudge","phon":"","grade":"Sr","pos":"WR, DB"},"19":{"name":"Cruz Castillo","phon":"","grade":"Jr","pos":"FS, WR"},"20":{"name":"Cole Tucker","phon":"","grade":"Jr","pos":"WR"},"21":{"name":"Kyle Prchal","phon":"","grade":"So","pos":"CB, WR"},"22":{"name":"Cash Redman","phon":"","grade":"So","pos":"RB, DB"},"23":{"name":"Julian Scherer","phon":"","grade":"Jr","pos":"WR, DB"},"24":{"name":"Tristan Scherer","phon":"","grade":"Jr","pos":"WR, FS"},"25":{"name":"Noah Girley","phon":"","grade":"Sr","pos":"WR, DB"},"26":{"name":"Cassius Ciocca","phon":"","grade":"Sr","pos":"RB, DB"},"27":{"name":"Chuck Lasher","phon":"","grade":"Jr","pos":"WR, DB"},"29":{"name":"Peyton Miller","phon":"","grade":"Sr","pos":"WR, DB"},"30":{"name":"Reese Withers","phon":"","grade":"Jr","pos":"RB, SS"},"31":{"name":"Parker Thorne","phon":"","grade":"Jr","pos":"OLB, LB, RB"},"32":{"name":"Colin Ciesla","phon":"","grade":"So","pos":"WR, CB"},"33":{"name":"Maxx Molifua-Maine","phon":"","grade":"Jr","pos":"DE, FB"},"34":{"name":"Oscar Brunner","phon":"","grade":"Jr","pos":""},"35":{"name":"Cohen Mugford","phon":"","grade":"So","pos":"WR, CB, S"},"39":{"name":"Blake Nere","phon":"","grade":"Jr","pos":"LB"},"41":{"name":"Nolan Smith","phon":"","grade":"Sr","pos":"K, P"},"42":{"name":"Sawyer Sanders","phon":"","grade":"Jr","pos":"P, K"},"44":{"name":"Howard Maksim","phon":"","grade":"Jr","pos":"TE, LB"},"46":{"name":"Ethan Boyle","phon":"","grade":"Jr","pos":"LS, TE, LB"},"50":{"name":"Jeremy Irwin","phon":"","grade":"Sr","pos":"DE"},"51":{"name":"Shea Gibaldi","phon":"","grade":"Sr","pos":"DE, OL"},"52":{"name":"Tanner LaVasseur","phon":"","grade":"Jr","pos":"OL, DE"},"53":{"name":"Trever Crellin","phon":"","grade":"Sr","pos":"OL, DL"},"55":{"name":"Elijah Quebedeaux","phon":"","grade":"Sr","pos":"C, DT"},"56":{"name":"Joseph Biancamano","phon":"","grade":"Jr","pos":"OL, DL"},"57":{"name":"Daniel Draher","phon":"","grade":"Jr","pos":"DT, OL"},"58":{"name":"Noah Conyer-Hutchinson","phon":"","grade":"Jr","pos":"DE, DT"},"59":{"name":"Conner Worrel","phon":"","grade":"Jr","pos":""},"61":{"name":"Dakota Moore","phon":"","grade":"Jr","pos":"C, G"},"62":{"name":"Logan Hoyle","phon":"","grade":"Jr","pos":"OL"},"63":{"name":"Kent Huelsman","phon":"","grade":"Jr","pos":"DE"},"64":{"name":"Wilson Jucenas","phon":"","grade":"Jr","pos":"OL, DL"},"66":{"name":"Wyatt Health","phon":"","grade":"So","pos":"OL"},"67":{"name":"Branton Baudot","phon":"","grade":"Jr","pos":"OL, DL"},"70":{"name":"Reese Spakosky","phon":"","grade":"Sr","pos":"OL, DL"},"71":{"name":"Evan Heidesch","phon":"","grade":"Sr","pos":"OL, DL"},"72":{"name":"Archie Provo","phon":"","grade":"Sr","pos":"OL"},"77":{"name":"Connor Woirol-Rodriquez","phon":"","grade":"Jr","pos":"OL, DL"},"79":{"name":"Gabriel Ayala","phon":"","grade":"Sr","pos":"OL, DL"},"80":{"name":"Deandre Jones","phon":"","grade":"Jr","pos":"TE, DE"},"85":{"name":"Gavin Joyce","phon":"","grade":"Jr","pos":"TE, LB"},"88":{"name":"Braydon Schwarz","phon":"","grade":"So","pos":"WR, FS"},"90":{"name":"Conner Nichols","phon":"","grade":"Sr","pos":"DT, OL"},"92":{"name":"Cameron Jones","phon":"","grade":"So","pos":"SS, RB"},"99":{"name":"Zakary Stohlmann","phon":"","grade":"Jr","pos":"LB, TE, K"}},"san marcos":{"0":{"name":"Jackson Willard","phon":"","grade":"Sr","pos":"MLB, RB"},"1":{"name":"Ezekiel McIntyre","phon":"","grade":"Sr","pos":"WR, FS"},"2":{"name":"Xzavier McIntyre","phon":"","grade":"So","pos":"CB, WR"},"3":{"name":"Brandon Stewart","phon":"","grade":"Jr","pos":""},"4":{"name":"Mo Henderson","phon":"","grade":"Sr","pos":"RB, MLB"},"5":{"name":"Mateo Ramos","phon":"","grade":"Sr","pos":"WR, FS"},"6":{"name":"Kael Elizondo","phon":"","grade":"Jr","pos":"WR, OLB"},"7":{"name":"Anthony Fortenberry","phon":"","grade":"Jr","pos":"WR, CB"},"8":{"name":"Mason Fisher","phon":"","grade":"Sr","pos":"DE, TE"},"9":{"name":"Ian Young","phon":"","grade":"Sr","pos":"CB"},"10":{"name":"Jordan Roa","phon":"","grade":"Sr","pos":"QB"},"11":{"name":"James Miller","phon":"","grade":"Jr","pos":"DE"},"12":{"name":"Miles Turner","phon":"","grade":"Jr","pos":"OLB"},"13":{"name":"Alonzo Rodriguez","phon":"","grade":"So","pos":"DE, MLB"},"14":{"name":"Matthew Fouts","phon":"","grade":"So","pos":"QB, WR"},"15":{"name":"Leandro Lacerda","phon":"","grade":"Jr","pos":"QB"},"16":{"name":"Amir Castro","phon":"","grade":"Sr","pos":"QB"},"17":{"name":"Lucas Swillens","phon":"","grade":"Sr","pos":"WR, DB"},"18":{"name":"Steven Rodriguez","phon":"","grade":"Sr","pos":"DE, TE"},"19":{"name":"Oliver Vanderpool","phon":"","grade":"Jr","pos":"RB, CB"},"20":{"name":"Hudson Chaney","phon":"","grade":"Jr","pos":"CB, FS"},"21":{"name":"Sean Green","phon":"","grade":"So","pos":"WR"},"22":{"name":"Chase Morgan","phon":"","grade":"Sr","pos":"RB"},"23":{"name":"Giancarlo Cleary","phon":"","grade":"Jr","pos":"K"},"24":{"name":"Thomas Grumann","phon":"","grade":"Sr","pos":"WR, DB"},"25":{"name":"Chase Kannenberg","phon":"","grade":"Sr","pos":"DB, WR"},"26":{"name":"Jagr Scott","phon":"","grade":"Jr","pos":"OLB"},"27":{"name":"Aston Mandelenis","phon":"","grade":"Sr","pos":"DB, WR"},"28":{"name":"Dylan Murray","phon":"","grade":"Jr","pos":"DB"},"29":{"name":"Leland Belangue","phon":"","grade":"Sr","pos":"WR, CB"},"30":{"name":"Ryder Bujkovsky","phon":"","grade":"Sr","pos":""},"31":{"name":"Finn Sullivan","phon":"","grade":"Sr","pos":"DB"},"32":{"name":"Zayd Siddiqui","phon":"","grade":"Jr","pos":"RB"},"33":{"name":"Athan Karimi","phon":"","grade":"Sr","pos":"DB, WR"},"34":{"name":"Blake Ramos","phon":"","grade":"So","pos":"RB"},"35":{"name":"Brandon Conley","phon":"","grade":"Sr","pos":"WR, CB"},"36":{"name":"Dannie Crothers","phon":"","grade":"Sr","pos":"OLB"},"37":{"name":"Angel Gonzalez","phon":"","grade":"Jr","pos":"OLB, RB"},"38":{"name":"Juan Vera","phon":"","grade":"Jr","pos":"K"},"41":{"name":"Timmy Ngo","phon":"","grade":"Sr","pos":"MLB"},"44":{"name":"Zack Knapek","phon":"","grade":"Jr","pos":"MLB, FB"},"50":{"name":"Jackson Handy","phon":"","grade":"Sr","pos":"OL"},"51":{"name":"Travis Parker","phon":"","grade":"Sr","pos":"OL, DL"},"54":{"name":"Christopher Gonzalez","phon":"","grade":"Jr","pos":"DE, DT"},"55":{"name":"Ty Westenberger","phon":"","grade":"Jr","pos":"OL, DT"},"56":{"name":"Ethan Juarez","phon":"","grade":"Jr","pos":"G, DT"},"58":{"name":"Steven Gonzales","phon":"","grade":"Jr","pos":"MLB"},"60":{"name":"Easton Herrera","phon":"","grade":"Jr","pos":"OL"},"66":{"name":"Edris Waziri","phon":"","grade":"Jr","pos":"DT, OL"},"72":{"name":"Ethyn Gallegos","phon":"","grade":"Sr","pos":"T, G"},"78":{"name":"Mikaele Pinto","phon":"","grade":"Jr","pos":"G, NG"},"81":{"name":"Andrew Allen","phon":"","grade":"Jr","pos":"WR, SB"},"83":{"name":"Jasiah Greenwald","phon":"","grade":"Sr","pos":"DB"},"92":{"name":"Hudson Sherr","phon":"","grade":"Sr","pos":"DE"},"99":{"name":"Jesse Gladden","phon":"","grade":"Sr","pos":"MLB"}}};
+function probe(){try{localStorage.setItem('_t','1');localStorage.removeItem('_t');return true}catch(e){return false}}
+function load(){
+  var d=defaults();
+  storeOK=probe();
+  try{
+    var r=localStorage.getItem(KEY);
+    if(r){var o=JSON.parse(r);for(var k in d){if(o[k]!=null)d[k]=o[k]}}
+  }catch(e){}
+  /* built-in rosters: added only for teams that have none yet; never overwrites edits */
+  for(var t in SEED){if(!d.rosters[t]||!Object.keys(d.rosters[t]).length)d.rosters[t]=JSON.parse(JSON.stringify(SEED[t]))}
+  if(d.game.home==='Home'&&d.game.away==='Away'&&!d.plays.length){d.game.home='Carlsbad';d.game.away='San Marcos'}
+  return d;
+}
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(S));storeOK=true;var n=new Date();savedAt=p2(n.getHours())+':'+p2(n.getMinutes())+':'+p2(n.getSeconds())}
+  catch(e){storeOK=false}
+  updStatus();
+}
+function updStatus(){var el=$('st');if(el)el.textContent=storeOK?(savedAt?'saved '+savedAt:'ready'):'NOT SAVING';var w=$('warn');if(w)w.style.display=storeOK?'none':'block'}
+function toast(m,bad){var t=$('toast');t.textContent=m;t.style.background=bad?'#a31515':'#1f8f4e';t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(function(){t.style.display='none'},2200)}
+
+function newDraft(){
+  var c=S.cur||{};
+  ui.autoStar=(c.type==='FG'||c.type==='Safety');
+  return {side:c.side||'home',q:c.q||'1',type:c.type||'Rush',td:false,pat:1,star:ui.autoStar,num:'',name:'',yds:'',note:''};
+}
+function val(id){var el=$(id);return el?el.value:''}
+function grab(){
+  if(!$('f_num'))return;
+  var d=ui.draft;
+  d.num=val('f_num');d.name=val('f_name');d.yds=val('f_yds');d.note=val('f_note');
+}
+function dirty(){grab();var d=ui.draft;return !!(trim(d.num)||trim(d.name)||trim(d.yds)||trim(d.note))}
+
+/* roster lookups: grade + phonetic come from the roster, set once */
+function info(p){var r=S.rosters[p.tkey||tk(p.side)];return (r&&p.num&&r[p.num])||{}}
+function gradeOf(p){return info(p).grade||''}
+function phonOf(p){return info(p).phon||p.phon||''}
+function nameOf(p){return p.name||info(p).name||''}
+function qbPhon(q){var r=S.rosters[q.tkey||''];return (r&&r[q.num]&&r[q.num].phon)||q.phon||''}
+
+/* ---------- scoring ---------- */
+function ptsOf(p){if(p.type==='Safety')return 2;if(p.td)return 6+(p.pat==null?1:p.pat);if(p.type==='FG')return 3;return 0}
+function scoreCalc(){
+  var list=S.plays.filter(function(p){return !p.pending}).sort(byTs),h=0,a=0,map={};
+  for(var i=0;i<list.length;i++){var p=list[i],pts=ptsOf(p);
+    if(pts){if(p.side==='home')h+=pts;else a+=pts;if(p.fix){h=p.fix.h;a=p.fix.a}map[p.id]={h:h,a:a}}}
+  return {h:h,a:a,map:map};
+}
+function scoreText(s){
+  var H=(S.game.home||'').toUpperCase(),A=(S.game.away||'').toUpperCase();
+  if(s.h>s.a)return s.h+'-'+s.a+' '+H;
+  if(s.a>s.h)return s.a+'-'+s.h+' '+A;
+  return s.h+'-'+s.a;
+}
+
+/* ---------- time / clips ---------- */
+function clipTag(ts){
+  if(!S.clips||!S.clips.length)return '';
+  var cs=secOfDay(ts,S.game.offset),best=null;
+  for(var i=0;i<S.clips.length;i++){var c=S.clips[i];if(c.sec<=cs&&(!best||c.sec>best.sec))best=c}
+  if(!best)return '';
+  var d=cs-best.sec;
+  return best.name+' +'+Math.floor(d/60)+':'+p2(d%60);
+}
+
+/* ---------- views ---------- */
+function seg(g,items,cur,labels){
+  var s='';
+  for(var i=0;i<items.length;i++){var v=items[i];
+    s+='<button type="button" class="seg'+(cur===v?' on':'')+'" data-act="pick" data-g="'+g+'" data-v="'+esc(v)+'">'+esc(labels?labels[i]:v)+'</button>';}
+  return s;
+}
+function qbChip(side){
+  var q=S.qbs[tk(side)];
+  return '<button type="button" class="qbchip" data-act="qb" data-side="'+side+'">'+esc(S.game[side])+' QB: <b>'+(q?'#'+esc(q.num)+' '+esc(q.name):'tap to set')+'</b></button>';
+}
+function stripHTML(){
+  return '<div class="segrow">'+seg('q',QS,ui.draft.q)+'</div><div class="qbrow">'+qbChip('home')+qbChip('away')+'</div>';
+}
+function tdLabel(d){return !d.td?'TD':(d.pat===1?'TD +1':d.pat===2?'TD +2':'TD +0')}
+function marksHTML(){
+  var list=S.plays.filter(isPending).sort(byTs);
+  if(!list.length)return '';
+  var h='<div class="marks">';
+  for(var i=0;i<list.length;i++)h+='<button type="button" class="mk'+(ui.editId===list[i].id?' on':'')+'" data-act="pend" data-id="'+list[i].id+'">&#9201; '+tod(list[i].ts,S.game.offset)+'</button>';
+  return h+'</div>';
+}
+function plTime(ts,q){var c=clipTag(ts);return '<b class="plt">'+tod(ts,S.game.offset)+'</b>'+(c?' &middot; '+esc(c):'')+' &middot; '+(q==='OT'?'OT':'Q'+esc(q))}
+function plCard(){
+  var ep=null;
+  if(ui.editId){for(var i=0;i<S.plays.length;i++)if(S.plays[i].id===ui.editId)ep=S.plays[i]}
+  if(!ep){
+    var l=S.plays.slice().sort(byTs).pop();
+    if(!l)return '<span class="muted">Hit MARK to grab the time. The playlist line shows here.</span>';
+    return '<span class="muted">Last: </span>'+plTime(l.ts,l.q)+(l.pending?' &middot; <b>needs details</b>':' &middot; '+esc(plDesc(l)));
+  }
+  grab();var d=ui.draft;
+  var tmp={side:d.side,team:S.game[d.side],tkey:tk(d.side),type:d.type,num:trim(d.num),name:trim(d.name),yds:(isNaN(parseInt(d.yds,10))?null:parseInt(d.yds,10)),td:d.td,note:trim(d.note),qb:qbSnap(d.side,d.type)};
+  var any=tmp.num||tmp.name||tmp.yds!=null||tmp.note;
+  return (ep.pending?'MARKED ':'EDIT ')+plTime(ep.ts,d.q)+' &mdash; '+(any?esc(plDesc(tmp)):'<span class="muted">fill in details, then save</span>');
+}
+function plDesc(p){return plainD(describe(p,{}))}
+function updPl(){var c=$('plcard');if(c&&ui.editId)c.innerHTML=plCard()}
+function viewLog(){
+  var d=ui.draft,h='';
+  h+='<div class="card edit" id="plcard">'+plCard()+'</div>';
+  h+='<div class="toprow"><button type="button" class="markb" data-act="mark">+ MARK</button>'+
+     '<button type="button" class="starb'+(d.star?' on':'')+'" data-act="pick" data-g="star">&#9733; STAR</button>'+
+     '<button type="button" class="tdb'+(d.td?' on':'')+'" data-act="pick" data-g="td">'+tdLabel(d)+'</button></div>';
+  h+=marksHTML();
+  h+='<div class="segrow">'+seg('side',['home','away'],d.side,[S.game.home,S.game.away])+'</div>';
+  h+='<div class="grid4">'+seg('type',TYPES,d.type)+'</div>';
+  h+='<div class="frow">'+
+    '<label>Jersey<input id="f_num" inputmode="numeric" autocomplete="off" value="'+esc(d.num)+'"></label>'+
+    '<label>Name<input id="f_name" autocomplete="off" autocapitalize="words" value="'+esc(d.name)+'"></label>'+
+    '<label>Yards<span class="ywrap"><input id="f_yds" inputmode="numeric" autocomplete="off" value="'+esc(d.yds)+'"><button type="button" class="neg" data-act="neg">&plusmn;</button></span></label></div>';
+  h+='<div class="muted" id="f_hint" style="min-height:1.2em;margin-top:4px">'+hintText()+'</div>';
+  h+='<div class="notewrap" style="margin-top:6px"><label>My notes<textarea id="f_note" rows="2" autocomplete="off">'+esc(d.note)+'</textarea></label><button type="button" data-act="voice">&#127908;</button></div>';
+  h+='<div class="row2">'+
+     (ui.editId?'<button type="button" class="big" data-act="cancel">Cancel</button>':'<button type="button" class="big" data-act="clear">Clear</button>')+
+     '<button type="button" class="big go" data-act="save">Save play</button></div>';
+  return h;
+}
+function playRow(p,sc){
+  var nm=nameOf(p),who=(p.num?'#'+esc(p.num)+' ':'')+esc(nm);
+  var clip=clipTag(p.ts);
+  var l1=(p.q==='OT'?'OT':'Q'+esc(p.q))+' &middot; cam '+tod(p.ts,S.game.offset)+(clip?' &middot; '+esc(clip):'');
+  if(p.pending){
+    return '<div class="play pend"><button type="button" class="star off" data-act="edit" data-id="'+p.id+'">&#9201;</button>'+
+      '<div class="pm"><div class="l1">'+l1+'</div><div class="l2"><b>MARKED</b> &mdash; needs details</div></div>'+
+      '<div class="pa"><button type="button" data-act="edit" data-id="'+p.id+'">Fill in</button><button type="button" data-act="del" data-id="'+p.id+'">&#10005;</button></div></div>';
+  }
+  var what=esc(p.type)+(p.yds!=null?' '+p.yds+' yds':'');
+  var chip=p.td?'<span class="chip">TD'+(p.pat?' +'+p.pat:'')+'</span>':(p.type==='FG'?'<span class="chip">FG</span>':(p.type==='Safety'?'<span class="chip">SAFETY</span>':''));
+  var s=sc&&sc.map[p.id];
+  return '<div class="play'+(p.star?' st':'')+(isScore(p)?' sc':'')+'"><button type="button" class="star'+(p.star?'':' off')+'" data-act="tstar" data-id="'+p.id+'">'+(p.star?'&#9733;':'&#9734;')+'</button>'+
+    '<div class="pm"><div class="l1">'+l1+'</div>'+
+    '<div class="l2"><b>'+who+'</b> &middot; '+esc(p.team)+' &middot; '+what+chip+'</div>'+
+    (s?'<div class="l3">Score: '+esc(S.game.home)+' '+s.h+' &ndash; '+esc(S.game.away)+' '+s.a+'</div>':'')+
+    (p.note?'<div class="l3">'+esc(p.note)+'</div>':'')+'</div>'+
+    '<div class="pa"><button type="button" data-act="edit" data-id="'+p.id+'">Edit</button>'+(s?'<button type="button" data-act="fixscore" data-id="'+p.id+'">Fix score</button>':'')+'<button type="button" data-act="del" data-id="'+p.id+'">&#10005;</button></div></div>';
+}
+function viewPlays(){
+  var list=S.plays.slice().sort(function(a,b){return b.ts-a.ts}),sc=scoreCalc();
+  var st=0,nsc=0,np=0;for(var i=0;i<list.length;i++){if(list[i].star)st++;if(isScore(list[i]))nsc++;if(list[i].pending)np++}
+  var h='<div class="row3"><div class="muted">'+list.length+' plays &middot; '+st+' &#9733; &middot; '+nsc+' scores'+(np?' &middot; '+np+' marked':'')+'</div>'+
+    '<button type="button" class="'+(ui.onlyStar?'on':'')+'" data-act="onlyStar">&#9733; only</button>'+
+    '<button type="button" class="'+(ui.onlyScore?'on':'')+'" data-act="onlyScore">Scores</button></div>';
+  var n=0;
+  for(var j=0;j<list.length;j++){var p=list[j];if(ui.onlyStar&&!p.star)continue;if(ui.onlyScore&&!isScore(p))continue;h+=playRow(p,sc);n++}
+  if(!n)h+='<div class="card muted">Nothing here yet.</div>';
+  return h;
+}
+function viewRoster(){
+  var side=ui.rside,r=S.rosters[tk(side)]||{},nums=Object.keys(r).sort(function(a,b){return (parseInt(a,10)||0)-(parseInt(b,10)||0)});
+  var q=S.qbs[tk(side)];
+  var h='<div class="segrow">'+seg('rside',['home','away'],side,[S.game.home,S.game.away])+'</div><div style="height:8px"></div>';
+  h+='<div class="row2"><button type="button" class="big go" data-act="padd">+ Add player</button><button type="button" class="big" data-act="rpaste">Paste roster</button></div>';
+  h+='<label style="margin:8px 0">Roster paste: one per line, <b>8 Anthony Barquinero | bar-key-NAIR-oh | Sr</b> (pronunciation and grade optional)<textarea id="r_in" rows="3" autocomplete="off"></textarea></label>';
+  for(var i=0;i<nums.length;i++){var n=nums[i],p=r[n],isq=q&&q.num===n;
+    h+='<div class="play"><div class="pm"><div class="l2"><b>#'+esc(n)+' '+esc(p.name)+'</b>'+(isq?' <span style="color:#ffd23f">&middot; QB</span>':'')+'</div>'+
+       '<div class="l1">'+(p.pos?esc(p.pos)+' &middot; ':'')+(p.phon?'say: '+esc(p.phon)+' &middot; ':'')+esc(p.grade||'no grade')+'</div></div>'+
+       '<button type="button" data-act="pedit" data-num="'+esc(n)+'">Edit</button></div>';}
+  if(!nums.length)h+='<div class="card muted">No players saved for '+esc(S.game[side])+' yet. Paste a roster above, or they fill in as you log plays.</div>';
+  return h;
+}
+function phHTML(t){return esc(t).replace(/\u0001([^\u0002]*)\u0002/g,'<span class="phx">$1</span>')}
+function missingNames(){
+  var shots=genShots(),seen={},out=[];
+  function add(name,team){if(!name)return;var k=name.toLowerCase();if(seen[k])return;seen[k]=1;out.push(name+' ('+team+')')}
+  for(var i=0;i<shots.length;i++){var p=shots[i].p;
+    if(nameOf(p)&&!phonOf(p))add(nameOf(p),p.team);
+    if(p.qb&&p.qb.name&&!qbPhon(p.qb))add(p.qb.name,p.qb.team);}
+  return out;
+}
+function viewScript(){
+  var shots=genShots(),miss=missingNames(),fs=scoreCalc();
+  var h='<div class="row2"><button type="button" class="big go" data-act="readopen">Read mode</button><button type="button" class="big" data-act="copyscript">Copy for Sheet</button></div>'+
+    '<div class="row2"><button type="button" data-act="copycam">Copy camera times</button><button type="button" data-act="dlscript">Download .txt</button></div>'+
+    '<div class="muted" style="margin:8px 0">'+shots.length+' &#9733; shots &middot; calculated score now '+esc(scoreText(fs))+' (check it against the scoreboard)</div>';
+  if(!shots.length)h+='<div class="card muted">Star plays and they show up here. Scores are starred for you.</div>';
+  for(var i=0;i<shots.length;i++){var s=shots[i];
+    h+='<div class="card shot"><div class="hd">'+esc(s.head)+'</div><div class="ds">'+phHTML(s.descM)+'</div>'+
+       '<div class="hd">QTR '+esc(s.qtr)+' &middot; POSS '+esc(s.poss)+(s.score?' &middot; <span class="sc2">'+esc(s.score)+'</span>':'')+'</div>'+
+       (s.note?'<div class="nt">NOTE: '+esc(s.note)+'</div>':'')+'</div>';}
+  h+='<div class="lbl">Phonetics</div><div class="card"><div class="muted">'+(miss.length?miss.length+' name'+pl(miss.length)+' on the list with no phonetic yet.':'Every name on the list has a phonetic.')+'</div>'+
+    '<div class="row2"><button type="button" data-act="copymiss">Copy those names</button><button type="button" class="go" data-act="applyph">Apply pasted</button></div>'+
+    '<label style="margin-top:8px">Paste phonetics, one per line: Name = say it<textarea id="ph_in" rows="3" autocomplete="off"></textarea></label></div>';
+  return h;
+}
+function viewSetup(){
+  var g=S.game,st=S.station,h='<div class="form">'+
+    '<label>Home team<input id="s_home" value="'+esc(g.home)+'"></label>'+
+    '<label>Away team<input id="s_away" value="'+esc(g.away)+'"></label>'+
+    '<label>Date<input id="s_date" value="'+esc(g.date)+'"></label>'+
+    '<label>Script #<input id="s_script" value="'+esc(st.scriptNo)+'" placeholder="D5"></label>'+
+    '<label>Home record<input id="s_hrec" value="'+esc(st.homeRec)+'" placeholder="6-2"></label>'+
+    '<label>Away record<input id="s_arec" value="'+esc(st.awayRec)+'" placeholder="4-4"></label>'+
+    '<label>Field producer<input id="s_prod" value="'+esc(st.producer)+'"></label>'+
+    '<label>Photographer<input id="s_photo" value="'+esc(st.photog)+'"></label>'+
+    '<label>Statistic of the game<input id="s_stat" value="'+esc(st.statistic)+'"></label></div>'+
+    '<label style="margin-top:8px">Establisher (one line per shot)<textarea id="s_est" rows="3">'+esc(st.establisher)+'</textarea></label>'+
+    '<div class="lbl">Camera clock sync</div><div class="card">'+
+    '<div class="muted">Phone now: <b id="clkp"></b> &middot; Camera now (calc): <b id="clkc"></b> &middot; offset '+g.offset+' s</div>'+
+    '<div class="form"><label style="grid-column:1/3">Time showing on the camera right now<input id="s_cam" placeholder="19:42:13" inputmode="numeric"></label>'+
+    '<button type="button" class="go" data-act="syncclk">Sync</button></div>'+
+    '<div class="muted" style="margin-top:6px">MARK and Save stamp the phone clock, shown here as camera time. Change the offset anytime and every play re-times.</div></div>'+
+    '<div class="lbl">Card clip log</div><div class="card"><div class="muted">'+(S.clips.length?S.clips.length+' clips loaded.':'None loaded.')+' Paste one clip per line with its start time, e.g. <b>C0012 19:30:05</b>. Plays then show the clip and how far into it.</div>'+
+    '<label style="margin-top:6px"><textarea id="c_in" rows="4" placeholder="C0012 19:30:05&#10;C0013 19:48:40"></textarea></label>'+
+    '<div class="row2"><button type="button" class="go" data-act="applyclips">Load clip log</button><button type="button" data-act="clearclips">Clear</button></div></div>'+
+    '<div class="lbl">Data</div><div class="stack">'+
+    '<button type="button" data-act="exportcsv">Download CSV</button>'+
+    '<button type="button" data-act="copycsv">Copy CSV</button>'+
+    '<button type="button" data-act="exportjson">Download backup (JSON)</button>'+
+    '<label>Restore backup<input id="imp" type="file" accept=".json,application/json"></label>'+
+    '<button type="button" class="red" data-act="newgame">New game (keep rosters + QBs)</button>'+
+    '<button type="button" class="red" data-act="wipe">Wipe everything</button></div>';
+  return h;
+}
+function modalHTML(){
+  var m=ui.modal;if(!m)return '';
+  var side=m.side,t=S.game[side];
+  return '<div class="modalbg"><div class="modal"><div class="lbl" style="margin-top:0">'+esc(t)+(m.qb?' &middot; QB':'')+'</div>'+
+    '<div class="form" style="grid-template-columns:1fr 1fr">'+
+    '<label>Jersey<input id="m_num" inputmode="numeric" value="'+esc(m.num)+'"></label>'+
+    '<label>Name<input id="m_name" autocapitalize="words" value="'+esc(m.name)+'"></label>'+
+    '<label>Position<input id="m_pos" autocapitalize="characters" value="'+esc(m.pos||'')+'"></label>'+
+    '<label>Say it (phonetic)<input id="m_phon" value="'+esc(m.phon)+'"></label></div>'+
+    '<div class="lbl">Grade</div><div class="segrow">'+seg('mgrade',GRADES,m.grade)+'</div>'+
+    '<div class="row2"><button type="button" class="seg'+(m.qb?' on':'')+'" data-act="pick" data-g="mqb">Is the QB</button>'+
+    (m.orig?'<button type="button" class="red" data-act="mdel">Delete</button>':'<span></span>')+'</div>'+
+    '<div class="row2"><button type="button" data-act="mcancel">Cancel</button><button type="button" class="go" data-act="msave">Save</button></div></div></div>';
+}
+function readHTML(){
+  var shots=genShots();
+  if(ui.readIdx>=shots.length)ui.readIdx=Math.max(0,shots.length-1);
+  var s=shots[ui.readIdx];
+  var h='<div id="read"><div class="rtop"><span>'+(s?'Shot '+s.n+' of '+shots.length+' &middot; QTR '+esc(s.qtr)+' &middot; '+esc(s.poss):'')+'</span><span>'+
+    '<button type="button" data-act="rfont" data-d="-6">A&minus;</button> <button type="button" data-act="rfont" data-d="6">A+</button> <button type="button" data-act="rclose">&#10005;</button></span></div>'+
+    '<div class="rbody">';
+  if(s){h+='<div class="rline" style="font-size:'+ui.font+'px">'+phHTML(s.descM)+'</div>'+(s.score?'<div class="rsc" style="font-size:'+Math.round(ui.font*0.8)+'px">'+esc(s.score)+'</div>':'');}
+  else h+='<div class="rline" style="font-size:32px">No highlighted plays yet.</div>';
+  h+='</div><div class="rnav"><button type="button" data-act="rprev">&laquo; Prev</button><button type="button" data-act="rnext">Next &raquo;</button></div></div>';
+  return h;
+}
+var TABS=[['log','Log'],['plays','Plays'],['roster','Roster'],['script','Script'],['setup','Setup']];
+function headSmall(){
+  var g=S.game,sc=scoreCalc();
+  return esc(g.away)+' '+sc.a+' @ '+esc(g.home)+' '+sc.h+' &middot; <span id="st"></span>';
+}
+function render(skip){
+  if(!skip)grab();
+  var h='<div id="warn" class="warn" style="display:'+(storeOK?'none':'block')+'">This browser is not saving. Use Download backup often, or open the page from a web address instead of a file.</div>'+
+    '<header><b>PPR Tracker</b><small>'+headSmall()+'</small></header>';
+  var v=ui.tab;
+  h+=v==='log'?viewLog():v==='plays'?viewPlays():v==='roster'?viewRoster():v==='script'?viewScript():viewSetup();
+  $('wrap').innerHTML=h;
+  var n='';for(var i=0;i<TABS.length;i++)n+='<button type="button" class="'+(ui.tab===TABS[i][0]?'on':'')+'" data-act="tab" data-v="'+TABS[i][0]+'">'+TABS[i][1]+'</button>';
+  $('nav').innerHTML=n;
+  var showStrip=(v==='log'&&!ui.read&&!ui.modal);
+  $('strip').innerHTML=showStrip?stripHTML():'';
+  $('strip').style.display=showStrip?'block':'none';
+  document.body.className=(v==='log')?'haslog':'';
+  $('overlay').innerHTML=(ui.read?readHTML():'')+modalHTML();
+  updStatus();clock();
+}
+
+/* ---------- PPR shot sheet generation ---------- */
+function ref(name,num,phon,seen){
+  if(!name)return num?'#'+num:'';
+  var k=name.toLowerCase();
+  if(seen[k]){var t=name.split(/\s+/);return t[t.length-1]}
+  seen[k]=1;
+  return phon?'\u0001'+phon+'\u0002':name;
+}
+function describe(p,seen){
+  var t=p.type,y=p.yds,a=y==null?null:Math.abs(y),td=p.td;
+  var me=ref(nameOf(p),p.num,phonOf(p),seen);
+  var qr=p.qb&&(p.qb.name||p.qb.num)?ref(p.qb.name,p.qb.num,qbPhon(p.qb),seen):'';
+  var T=p.team+"'s ",N=a!=null?a+'-yd ':'',s;
+  if(t==='Rush'){
+    s=td?me+' '+N+'TD run':(y!=null&&y<0?me+' stopped for a '+a+'-yd loss':me+' '+(a!=null?N+'run':'run'));
+  }else if(t==='Pass'){
+    s=qr?qr+' '+N+(td?'TD ':'')+'pass to '+me:me+' '+N+(td?'TD ':'')+'catch';
+  }else if(t==='Sack'){
+    s=T+me+' sacks '+(qr||'the quarterback')+(a!=null?' for a '+a+'-yd loss':'');
+  }else if(t==='INT'){
+    s=T+me+' intercepts '+(qr?'a pass thrown by '+qr:'the ball')+(y!=null&&y>0?' and returns it '+a+' yds':'')+(td?' for a touchdown':'');
+  }else if(t==='Fumble'){
+    s=T+me+' recovers the fumble'+(y!=null&&y>0?' and returns it '+a+' yds':'')+(td?' for a touchdown':'');
+  }else if(t==='Punt'){
+    s=me+' '+N+'punt';
+  }else if(t==='KO Ret'){
+    s=me+' '+N+(td?'TD ':'')+'kickoff return';
+  }else if(t==='Punt Ret'){
+    s=me+' '+N+(td?'TD ':'')+'punt return';
+  }else if(t==='FG'){
+    s=me+' '+N+'field goal';
+  }else if(t==='Tackle'){
+    s=T+me+' tackle'+(y!=null&&y<0?' for a '+a+'-yd loss':'');
+  }else if(t==='Safety'){
+    s=T+me+' safety';
+  }else{
+    s=p.note?(me?me+': ':'')+p.note:me;
+  }
+  s=s.replace(/\s+/g,' ').replace(/^\s+|\s+$/g,'');
+  /* phonetics keep their own case (KY-po GUTIERREZ); everything else is caps */
+  return s.split(/(\u0001.*?\u0002)/).map(function(x){return x.charAt(0)==='\u0001'?x:x.toUpperCase()}).join('');
+}
+function plainD(s){return s.replace(/[\u0001\u0002]/g,'')}
+function genShots(){
+  var sc=scoreCalc(),seen={};
+  var arr=S.plays.filter(function(p){return p.star&&!p.pending}).sort(byTs);
+  return arr.map(function(p,i){
+    var clip=clipTag(p.ts);
+    var poss=S.game[DEFTYPES[p.type]?other(p.side):p.side];
+    var s=sc.map[p.id];
+    return {n:i+1,p:p,
+      head:'SHOT '+(i+1)+' | '+(p.q==='OT'?'OT':'Q'+p.q)+(p.num?' | #'+p.num:'')+' | CAM '+tod(p.ts,S.game.offset)+(clip?' | '+clip:''),
+      qtr:p.q,poss:String(poss||'').toUpperCase()+(p.type==='Punt'?' PUNTING':''),descM:describe(p,seen),score:s?scoreText(s):'',
+      note:(p.type==='Other'?'':p.note),cam:tod(p.ts,S.game.offset),clip:clip};
+  }).map(function(o){o.desc=plainD(o.descM);return o});
+}
+function scriptText(){
+  var shots=genShots(),g=S.game,st=S.station,fs=scoreCalc(),T='\t';
+  var A=g.away.toUpperCase()+(st.awayRec?' ('+st.awayRec+')':''),H=g.home.toUpperCase()+(st.homeRec?' ('+st.homeRec+')':'');
+  var L=[];
+  L.push('Script #:'+T+st.scriptNo+T+'Away:'+T+A+T+'@'+T+'Home:'+T+H);
+  L.push('MARK IF DONE');
+  L.push('X');
+  var est=trim(st.establisher).split(/\r?\n/);
+  L.push('Establisher:'+T+(est[0]||'').toUpperCase());
+  for(var i=1;i<est.length;i++)if(trim(est[i]))L.push(est[i].toUpperCase());
+  L.push('QTR'+T+'POSS'+T+'DESCRIPTION OF PLAY'+T+'SCORE');
+  for(var j=0;j<shots.length;j++){var s=shots[j];L.push(s.qtr+T+s.poss+T+s.desc+T+s.score)}
+  L.push(scoreText(fs));
+  L.push('FINAL SCORE:');
+  L.push('STATISTIC OF THE GAME:'+T+(st.statistic||'').toUpperCase());
+  L.push('Producer:'+T+st.producer+T+'Photographer:'+T+st.photog);
+  return L.join('\n');
+}
+function camText(){
+  var shots=genShots(),L=['CAM TIME\tCLIP\tQTR\tDESCRIPTION\tSCORE'];
+  for(var i=0;i<shots.length;i++){var s=shots[i];L.push(s.cam+'\t'+s.clip+'\t'+s.qtr+'\t'+s.desc+'\t'+s.score+(s.note?'\tNOTE: '+s.note:''))}
+  return L.join('\n');
+}
+function csvText(){
+  var cols=['game_date','home','away','team','quarter','cam_time','clip','phone_time','jersey','name','phonetic','grade','play_type','yards','td','pat','highlight','marked_only','qb','note'];
+  function q(v){v=v==null?'':String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+  var rows=[cols.join(',')],list=S.plays.slice().sort(byTs);
+  for(var i=0;i<list.length;i++){var p=list[i];
+    rows.push([S.game.date,S.game.home,S.game.away,p.team,p.q,tod(p.ts,S.game.offset),clipTag(p.ts),tod(p.ts,0),p.num,nameOf(p),phonOf(p),gradeOf(p),p.type,p.yds,p.td?'Y':'',p.td?p.pat:'',p.star?'Y':'',p.pending?'Y':'',p.qb?(p.qb.num+' '+p.qb.name):'',p.note].map(q).join(','));}
+  return rows.join('\n');
+}
+
+/* ---------- actions ---------- */
+function hintText(){
+  var d=ui.draft,r=S.rosters[tk(d.side)],p=r&&trim(d.num)?r[trim(d.num)]:null;
+  if(!p)return '';
+  return esc([p.pos,p.grade].filter(function(x){return x}).join(' · '));
+}
+function autofill(){
+  var d=ui.draft,num=trim(val('f_num')),r=S.rosters[tk(d.side)],p=r&&num?r[num]:null;
+  if(p&&p.name){$('f_name').value=p.name;ui.auto=true}
+  else if(ui.auto){$('f_name').value='';ui.auto=false}
+  if($('f_hint'))$('f_hint').innerHTML=hintText();
+}
+function setGroup(g,v,obj){
+  obj[g==='mgrade'?'grade':g]=v;
+  qsa('[data-g="'+g+'"]').forEach(function(el){el.classList.toggle('on',el.getAttribute('data-v')===v)});
+}
+function setStar(on){ui.draft.star=on;qsa('[data-g="star"]').forEach(function(el){el.classList.toggle('on',on)})}
+function setTd(){
+  var d=ui.draft;
+  qsa('[data-g="td"]').forEach(function(el){el.classList.toggle('on',d.td);el.textContent=tdLabel(d)});
+}
+function cycleTd(){
+  var d=ui.draft;
+  if(!d.td){d.td=true;d.pat=1;if(!d.star){setStar(true);ui.autoStar=true}}
+  else if(d.pat===1)d.pat=2;
+  else if(d.pat===2)d.pat=0;
+  else{d.td=false;d.pat=1;if(ui.autoStar&&d.type!=='FG'&&d.type!=='Safety'){setStar(false);ui.autoStar=false}}
+  setTd();
+}
+function qbSnap(side,type){
+  var qs=type==='Pass'?side:(type==='Sack'||type==='INT')?other(side):null;
+  if(!qs)return null;
+  var q=S.qbs[tk(qs)];
+  return q?{num:q.num,name:q.name,phon:q.phon,team:S.game[qs],tkey:tk(qs)}:null;
+}
+function newId(){return 'p'+Date.now()+Math.floor(Math.random()*1000)}
+function doMark(){
+  grab();
+  var d=ui.draft,now=Date.now();
+  var clean=!trim(d.num)&&!trim(d.name)&&!trim(d.yds)&&!trim(d.note);
+  var editingPending=false;
+  if(ui.editId){for(var i=0;i<S.plays.length;i++)if(S.plays[i].id===ui.editId&&S.plays[i].pending)editingPending=true}
+  var canLoad=clean&&(!ui.editId||editingPending);
+  var p={id:newId(),ts:now,side:d.side,team:S.game[d.side],tkey:tk(d.side),q:d.q,type:d.type,num:'',name:'',yds:null,td:canLoad?d.td:false,pat:canLoad?d.pat:1,star:canLoad?d.star:false,note:'',qb:null,pending:true};
+  S.plays.push(p);
+  if(canLoad)ui.editId=p.id;
+  save();render(true);
+  var clip=clipTag(now);
+  toast('Marked '+tod(now,S.game.offset)+(clip?' · '+clip:''));
+  if(canLoad)setTimeout(function(){var f=$('f_num');if(f)f.focus()},50);
+}
+function savePlay(){
+  grab();
+  var d=ui.draft;
+  var num=trim(d.num),name=trim(d.name);
+  var yds=parseInt(d.yds,10);if(isNaN(yds))yds=null;
+  var p={id:newId(),ts:Date.now(),side:d.side,team:S.game[d.side],tkey:tk(d.side),q:d.q,type:d.type,num:num,name:name,yds:yds,td:d.td,pat:d.td?d.pat:0,star:d.star,note:trim(d.note),qb:qbSnap(d.side,d.type)};
+  var msg='Saved',wasPending=false;
+  if(ui.editId){
+    for(var i=0;i<S.plays.length;i++)if(S.plays[i].id===ui.editId){wasPending=!!S.plays[i].pending;p.id=ui.editId;p.ts=S.plays[i].ts;if(S.plays[i].fix)p.fix=S.plays[i].fix;S.plays[i]=p;break}
+    msg=wasPending?'Saved':'Updated';
+  }else{
+    S.plays.push(p);
+  }
+  if(!ui.editId||wasPending){S.cur={side:d.side,q:d.q,type:d.type}}
+  if(num){
+    var key=tk(d.side),r=S.rosters[key]||(S.rosters[key]={}),o=r[num]||{name:'',phon:'',grade:''};
+    r[num]={name:name||o.name,phon:o.phon,grade:o.grade,pos:o.pos||''};
+  }
+  ui.editId=null;ui.auto=false;
+  ui.draft=newDraft();
+  save();render(true);
+  toast(msg+(num?' #'+num:'')+(p.star?' ★':''));
+  setTimeout(function(){var f=$('f_num');if(f)f.focus()},50);
+}
+function editPlay(id){
+  for(var i=0;i<S.plays.length;i++){var p=S.plays[i];if(p.id===id){
+    ui.draft={side:p.side,q:p.q,type:p.type,td:!!p.td,pat:p.pat==null?1:p.pat,star:!!p.star,num:p.num||'',name:p.name||'',yds:p.yds==null?'':String(p.yds),note:p.note||''};
+    ui.editId=id;ui.autoStar=false;ui.tab='log';render(true);window.scrollTo(0,0);return}}
+}
+function openModal(side,num,asQB){
+  var r=S.rosters[tk(side)]||{},p=num?r[num]:null,q=S.qbs[tk(side)];
+  if(!p&&asQB&&q){p=r[q.num]||{name:q.name,phon:q.phon,grade:''};num=q.num}
+  ui.modal={side:side,orig:p?num:'',num:p?num:'',name:p?p.name:'',phon:p?p.phon:'',grade:p?p.grade||'':'',pos:p?p.pos||'':'',qb:!!(asQB||(q&&num&&q.num===num))};
+  render();
+}
+function saveModal(){
+  var m=ui.modal,num=trim(val('m_num')),name=trim(val('m_name')),phon=trim(val('m_phon'));
+  if(!num){toast('Jersey number needed',true);return}
+  var key=tk(m.side),r=S.rosters[key]||(S.rosters[key]={});
+  if(m.orig&&m.orig!==num){delete r[m.orig];var q0=S.qbs[key];if(q0&&q0.num===m.orig)delete S.qbs[key]}
+  r[num]={name:name,phon:phon,grade:m.grade||'',pos:trim(val('m_pos'))};
+  if(m.qb)S.qbs[key]={num:num,name:name,phon:phon};
+  else if(S.qbs[key]&&S.qbs[key].num===num)delete S.qbs[key];
+  ui.modal=null;save();render();toast('Saved #'+num);
+}
+function delModal(){
+  var m=ui.modal,key=tk(m.side);
+  if(!confirm('Delete #'+m.orig+'?'))return;
+  if(S.rosters[key])delete S.rosters[key][m.orig];
+  if(S.qbs[key]&&S.qbs[key].num===m.orig)delete S.qbs[key];
+  ui.modal=null;save();render();
+}
+function pasteRoster(){
+  var lines=val('r_in').split(/\r?\n/),key=tk(ui.rside),r=S.rosters[key]||(S.rosters[key]={}),n=0;
+  for(var i=0;i<lines.length;i++){
+    var parts=lines[i].split('|'),m=trim(parts[0]).match(/^#?(\d+)\s*[-,\t ]+\s*(.+)$/);
+    if(!m)continue;
+    var num=m[1],o=r[num]||{name:'',phon:'',grade:''},gr=trim(parts[2]||'').slice(0,2).toLowerCase(),g='';
+    for(var k=0;k<GRADES.length;k++)if(GRADES[k].toLowerCase()===gr)g=GRADES[k];
+    r[num]={name:trim(m[2]),phon:trim(parts[1]||'')||o.phon,grade:g||o.grade,pos:trim(parts[3]||'')||o.pos||''};
+    n++;
+  }
+  save();render();toast(n?'Added '+n+' players':'No players found',!n);
+}
+function applyPhonetics(){
+  var lines=val('ph_in').split(/\r?\n/),n=0;
+  for(var i=0;i<lines.length;i++){
+    var m=lines[i].match(/^\s*(.+?)\s*=\s*(.+?)\s*$/);if(!m)continue;
+    var nm=m[1].replace(/^[-*\s]+/,'').replace(/\s*\(.*\)\s*$/,'').toLowerCase(),ph=m[2],hit=false;
+    for(var k in S.rosters){var r=S.rosters[k];for(var num in r){if((r[num].name||'').toLowerCase()===nm){r[num].phon=ph;hit=true}}}
+    for(var k2 in S.qbs){if((S.qbs[k2].name||'').toLowerCase()===nm){S.qbs[k2].phon=ph;hit=true}}
+    if(hit)n++;
+  }
+  save();render();toast(n?'Applied '+n:'No matching names',!n);
+}
+function copyMissing(){
+  var m=missingNames();
+  if(!m.length){toast('Nothing missing');return}
+  copyText('Give me on-air phonetic spellings for these names, one per line as "Name = phonetic":\n'+m.map(function(x){return '- '+x}).join('\n'));
+}
+function applyClips(){
+  var lines=val('c_in').split(/\r?\n/),out=[];
+  for(var i=0;i<lines.length;i++){
+    var m=lines[i].match(/^\s*(\S+).*?(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(am|pm)?/i);
+    if(!m)continue;
+    var h=parseInt(m[2],10),ap=(m[5]||'').toLowerCase();
+    if(ap==='pm'&&h<12)h+=12;if(ap==='am'&&h===12)h=0;
+    out.push({name:m[1],sec:h*3600+parseInt(m[3],10)*60+parseInt(m[4]||'0',10)});
+  }
+  out.sort(function(a,b){return a.sec-b.sec});
+  S.clips=out;save();render();toast(out.length?out.length+' clips loaded':'No clips found',!out.length);
+}
+function fixScore(id){
+  var sc=scoreCalc(),cur=sc.map[id],txt=prompt('Scoreboard after this play: '+S.game.home+' first, then '+S.game.away+' (example 14-7). Leave blank to clear.',cur?cur.h+'-'+cur.a:'');
+  if(txt==null)return;
+  var m=String(txt).match(/(\d+)\D+(\d+)/);
+  for(var i=0;i<S.plays.length;i++)if(S.plays[i].id===id){
+    if(m)S.plays[i].fix={h:parseInt(m[1],10),a:parseInt(m[2],10)};
+    else delete S.plays[i].fix;
+  }
+  save();render();
+}
+function voice(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition,f=$('f_note');
+  if(!SR){f.focus();toast('Tap the mic on your keyboard');return}
+  try{
+    var rec=new SR();rec.lang='en-US';rec.interimResults=false;
+    rec.onresult=function(e){f.value=trim(f.value+' '+e.results[0][0].transcript)};
+    rec.onerror=function(){f.focus();toast('Tap the mic on your keyboard',true)};
+    rec.start();toast('Listening...');
+  }catch(e){f.focus()}
+}
+function download(name,text,mime){
+  try{
+    var b=new Blob([text],{type:mime||'text/plain'}),a=document.createElement('a');
+    a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();
+    setTimeout(function(){document.body.removeChild(a)},500);
+  }catch(e){toast('Download failed - use Copy',true)}
+}
+function copyText(t){
+  var ok=false;
+  try{var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.top='0';document.body.appendChild(ta);ta.focus();ta.select();ok=document.execCommand('copy');document.body.removeChild(ta)}catch(e){}
+  if(!ok&&navigator.clipboard){try{navigator.clipboard.writeText(t);ok=true}catch(e2){}}
+  toast(ok?'Copied':'Copy failed',!ok);
+}
+function fname(ext){return 'ppr-'+S.game.date+'-'+tk('away').replace(/[^a-z0-9]+/g,'')+'-at-'+tk('home').replace(/[^a-z0-9]+/g,'')+'.'+ext}
+function syncClock(){
+  var t=trim(val('s_cam')),m=t.match(/^(\d{1,2}):?(\d{2}):?(\d{2})?$/);
+  if(!m){toast('Enter camera time like 19:42:13',true);return}
+  var secs=(+m[1])*3600+(+m[2])*60+(+(m[3]||0)),n=new Date(),now=n.getHours()*3600+n.getMinutes()*60+n.getSeconds(),off=secs-now;
+  if(off>43200)off-=86400;if(off<-43200)off+=86400;
+  S.game.offset=off;save();render();toast('Offset '+off+' s');
+}
+function clock(){
+  var a=$('clkp'),b=$('clkc');if(!a||!b)return;
+  var n=Date.now();a.textContent=tod(n,0);b.textContent=tod(n,S.game.offset);
+}
+function saveSetup(){
+  var g=S.game,st=S.station,hv=trim(val('s_home')),av=trim(val('s_away'));
+  g.home=hv||'Home';g.away=av||'Away';g.date=val('s_date')||today();
+  st.scriptNo=trim(val('s_script'));st.homeRec=trim(val('s_hrec'));st.awayRec=trim(val('s_arec'));
+  st.producer=trim(val('s_prod'));st.photog=trim(val('s_photo'));st.statistic=trim(val('s_stat'));st.establisher=val('s_est');
+  save();
+  var h=document.querySelector('header small');if(h)h.innerHTML=headSmall();updStatus();
+}
+
+document.addEventListener('click',function(ev){
+  var t=ev.target;
+  while(t&&t!==document){if(t.getAttribute&&t.getAttribute('data-act'))break;t=t.parentNode}
+  if(!t||t===document)return;
+  var act=t.getAttribute('data-act'),v=t.getAttribute('data-v'),id=t.getAttribute('data-id');
+  if(act==='tab'){grab();ui.tab=v;render();window.scrollTo(0,0)}
+  else if(act==='mark')doMark();
+  else if(act==='pend'){
+    if(ui.editId!==id&&dirty()&&!confirm('Discard what is in the form?'))return;
+    editPlay(id);
+  }
+  else if(act==='pick'){
+    var g=t.getAttribute('data-g');
+    if(g==='star'){ui.autoStar=false;setStar(!ui.draft.star)}
+    else if(g==='td')cycleTd();
+    else if(g==='mqb'){ui.modal.qb=!ui.modal.qb;t.classList.toggle('on',ui.modal.qb)}
+    else if(g==='mgrade'){setGroup('mgrade',ui.modal.grade===v?'':v,ui.modal)}
+    else if(g==='rside'){ui.rside=v;render()}
+    else{
+      setGroup(g,v,ui.draft);
+      if(!ui.editId&&(g==='side'||g==='q'||g==='type')){S.cur=S.cur||{};S.cur[g]=v;save()}
+      if(g==='side')autofill();
+      if(g==='type'){
+        if(v==='FG'||v==='Safety'){if(!ui.draft.star)setStar(true);ui.autoStar=true}
+        else if(ui.autoStar&&!ui.draft.td){setStar(false);ui.autoStar=false}
+      }
+    }
+  }
+  else if(act==='neg'){var f=$('f_yds'),s=f.value;f.value=s.charAt(0)==='-'?s.slice(1):'-'+s}
+  else if(act==='voice')voice();
+  else if(act==='save')savePlay();
+  else if(act==='clear'||act==='cancel'){ui.editId=null;ui.auto=false;ui.draft=newDraft();render(true)}
+  else if(act==='tstar'){for(var i=0;i<S.plays.length;i++)if(S.plays[i].id===id)S.plays[i].star=!S.plays[i].star;save();render()}
+  else if(act==='edit')editPlay(id);
+  else if(act==='fixscore')fixScore(id);
+  else if(act==='del'){if(confirm('Delete this play?')){S.plays=S.plays.filter(function(p){return p.id!==id});if(ui.editId===id){ui.editId=null;ui.draft=newDraft()}save();render(true)}}
+  else if(act==='onlyStar'){ui.onlyStar=!ui.onlyStar;render()}
+  else if(act==='onlyScore'){ui.onlyScore=!ui.onlyScore;render()}
+  else if(act==='qb'){grab();openModal(t.getAttribute('data-side'),'',true)}
+  else if(act==='padd')openModal(ui.rside,'',false);
+  else if(act==='rpaste')pasteRoster();
+  else if(act==='pedit')openModal(ui.rside,t.getAttribute('data-num'),false);
+  else if(act==='msave')saveModal();
+  else if(act==='mcancel'){ui.modal=null;render()}
+  else if(act==='mdel')delModal();
+  else if(act==='readopen'){ui.read=true;ui.readIdx=0;render()}
+  else if(act==='rclose'){ui.read=false;render()}
+  else if(act==='rnext'){ui.readIdx++;render()}
+  else if(act==='rprev'){ui.readIdx=Math.max(0,ui.readIdx-1);render()}
+  else if(act==='rfont'){ui.font=Math.max(24,Math.min(160,ui.font+parseInt(t.getAttribute('data-d'),10)));render()}
+  else if(act==='copyscript')copyText(scriptText());
+  else if(act==='copycam')copyText(camText());
+  else if(act==='dlscript')download(fname('txt'),scriptText());
+  else if(act==='copymiss')copyMissing();
+  else if(act==='applyph')applyPhonetics();
+  else if(act==='applyclips')applyClips();
+  else if(act==='clearclips'){S.clips=[];save();render()}
+  else if(act==='exportcsv')download(fname('csv'),csvText(),'text/csv');
+  else if(act==='copycsv')copyText(csvText());
+  else if(act==='exportjson')download(fname('json'),JSON.stringify(S),'application/json');
+  else if(act==='syncclk')syncClock();
+  else if(act==='newgame'){if(confirm('Clear all plays and start a new game? Rosters and QBs stay.')){S.plays=[];S.game.offset=0;S.game.date=today();S.clips=[];S.station=defaults().station;ui.editId=null;ui.draft=newDraft();save();render(true)}}
+  else if(act==='wipe'){if(confirm('Wipe EVERYTHING including rosters?')&&confirm('Really wipe it all?')){S=defaults();ui.editId=null;ui.draft=newDraft();save();render(true)}}
+});
+document.addEventListener('input',function(ev){
+  var t=ev.target;if(!t)return;
+  if(t.id==='f_num'){ui.draft.num=t.value;autofill()}
+  if(t.id==='f_num'||t.id==='f_name'||t.id==='f_yds'||t.id==='f_note')updPl();
+  else if(t.id==='m_num'&&ui.modal&&!ui.modal.orig&&!trim(val('m_name'))){
+    var r=S.rosters[tk(ui.modal.side)],p=r&&r[trim(t.value)];
+    if(p){$('m_pos').value=p.pos||'';$('m_name').value=p.name||'';$('m_phon').value=p.phon||'';setGroup('mgrade',p.grade||'',ui.modal)}
+  }
+});
+document.addEventListener('change',function(ev){
+  var t=ev.target;if(!t)return;
+  if(t.id&&t.id.indexOf('s_')===0&&t.id!=='s_cam')saveSetup();
+  if(t.id==='imp'&&t.files&&t.files[0]){
+    var fr=new FileReader();
+    fr.onload=function(){
+      try{var o=JSON.parse(fr.result);if(!o.plays)throw 1;if(!confirm('Replace current data with this backup?'))return;
+        var d=defaults();for(var k in d){if(o[k]!=null)d[k]=o[k]}S=d;ui.editId=null;ui.draft=newDraft();save();render(true);toast('Restored')}
+      catch(e){toast('Not a valid backup',true)}
+    };
+    fr.readAsText(t.files[0]);
+  }
+});
+setInterval(clock,1000);
+
+S=load();ui.draft=newDraft();
+render(true);
+})();
+</script>
+</body>
+</html>
+Displaying ppr.html.
